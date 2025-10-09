@@ -1,9 +1,8 @@
-import 'dart:async' show scheduleMicrotask;
-import 'dart:collection' show Queue;
 import 'dart:developer' as developer;
 
-import 'package:flutter/foundation.dart' show kReleaseMode, ChangeNotifier;
+import 'package:flutter/foundation.dart' show kReleaseMode;
 
+import '../../feature/logbook/log_buffer.dart';
 import '../extension/date_time_extension.dart';
 import '../extension/string_buffer_extension.dart';
 import '../model/console_color.dart';
@@ -107,7 +106,6 @@ final class _L {
         if (kReleaseMode) return;
 
         final formattedMessage = _formatStyled(
-          // [$_esc$foreground] - for [message] color
           '${Constants.esc}$foreground $message',
           prefix,
           font: font,
@@ -130,16 +128,17 @@ String _formatStyled(
   String? background,
   bool withMilliseconds = false,
 }) {
-  final buffer = StringBuffer('[');
+  final buffer = StringBuffer('');
   for (final value in [font, foreground, background]) {
     if (value != null) buffer.writeEsc(value);
   }
   buffer
+    ..write('[')
     ..write(prefix)
+    ..write(']')
     ..writeEsc(Constants.reset);
 
   return buffer.completeMessage(
-    // [_timeFormat(DateTime.now())] - this is for showing the time in the log
     '[${DateTime.now().timeFormat(withMilliseconds: withMilliseconds)}]$message',
   );
 }
@@ -158,60 +157,4 @@ String _getFileLocation({required StackTrace stackTrace}) {
   return fileLocation
       .substring(fileLocation.indexOf('(') + 1, fileLocation.indexOf(')'))
       .trim();
-}
-
-/// Log buffer
-
-class LogBuffer with ChangeNotifier {
-  LogBuffer._internal();
-  static final LogBuffer _instance = LogBuffer._internal();
-  static LogBuffer get instance => _instance;
-
-  static const int bufferLimit =
-      65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
-  final Queue<LogMessage> _queue = Queue<LogMessage>();
-  bool _notificationScheduled = false;
-
-  /// Get the logs
-  Iterable<LogMessage> get logs => _queue;
-
-  /// Clear the logs
-  void clear() {
-    _queue.clear();
-    _scheduleNotification();
-  }
-
-  /// Add a log to the buffer
-  void add(LogMessage log) {
-    if (_queue.length >= bufferLimit) _queue.removeFirst();
-    _queue.add(log);
-    _scheduleNotification();
-  }
-
-  /// Add a list of logs to the buffer
-  void addAll(List<LogMessage> logs) {
-    final list = logs.take(bufferLimit).toList();
-    if (_queue.length + list.length > bufferLimit) {
-      final toRemove = _queue.length + list.length - bufferLimit;
-      for (var i = 0; i < toRemove; i++) _queue.removeFirst();
-    }
-    _queue.addAll(list);
-    _scheduleNotification();
-  }
-
-  /// Schedule a notification to be sent after the current frame
-  void _scheduleNotification() {
-    if (_notificationScheduled) return;
-    _notificationScheduled = true;
-    scheduleMicrotask(() {
-      _notificationScheduled = false;
-      notifyListeners();
-    });
-  }
-
-  @override
-  void dispose() {
-    _queue.clear();
-    super.dispose();
-  }
 }

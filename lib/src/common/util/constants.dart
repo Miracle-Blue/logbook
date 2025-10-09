@@ -10,6 +10,4 @@ sealed class Constants {
 
   /// Ansi reset
   static const String reset = '0m';
-
-  static const telegramBaseUrl = 'https://api.telegram.org';
 }

@@ -32,8 +32,6 @@ class MyApp extends StatelessWidget {
       config: LogbookConfig(
         enabled: kDebugMode,
         debugFileName: '${DateTime.now().toIso8601String()}.csv',
-        telegramBotToken: '',
-        telegramChatId: '',
       ),
       child: child ?? const SizedBox.shrink(),
     ),

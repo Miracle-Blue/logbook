@@ -12,7 +12,6 @@ extension StringBufferX on StringBuffer {
   /// Completes the message by adding the given message to the buffer.
   String completeMessage(Object message) =>
       (this
-            ..write(']')
             ..write(' ')
             ..write(message))
           .toString();

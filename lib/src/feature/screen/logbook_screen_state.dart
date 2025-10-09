@@ -8,11 +8,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   late final FocusNode _searchFocusNode;
   late final ValueNotifier<bool> _isSendingLogToTelegram;
 
-  bool get sendingLogToTelegramEnabled =>
-      (widget.config.telegramBotToken != null &&
-          widget.config.telegramBotToken!.isNotEmpty) &&
-      (widget.config.telegramChatId != null &&
-          widget.config.telegramChatId!.isNotEmpty);
+  late final ILogbookRepository _logbookRepository;
+
+  bool get sendingLogToTelegramEnabled => widget.config.uri != null;
 
   static const _allFilter = 'All';
   String selectedFilter = 'All';
@@ -83,29 +81,6 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     setState(() {});
   }
 
-  /// Writes a CSV file using an isolate for processing
-  Future<String> listToCSVString({
-    required List<List<Object?>> rows,
-    bool addBomForExcel = true,
-  }) async {
-    final receivePort = ReceivePort();
-
-    try {
-      // Spawn isolate
-      await Isolate.spawn(_listToCSV, [receivePort.sendPort, rows]);
-
-      // Wait for the CSV string with timeout
-      final csv = await receivePort.first.timeout(
-        const Duration(seconds: 30),
-        onTimeout: () => throw TimeoutException('CSV generation timed out'),
-      );
-
-      return '\uFEFF$csv';
-    } finally {
-      receivePort.close();
-    }
-  }
-
   Future<void> onSaveAndSendToTelegramTap() async {
     if (!sendingLogToTelegramEnabled) {
       l.w('Sending log to telegram is not enabled');
@@ -130,38 +105,16 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     HapticFeedback.selectionClick().ignore();
 
     try {
-      final file = await listToCSVString(
-        rows: [
-          ['prefix', 'timestamp', 'message'],
-          ...LogBuffer.instance.logs.map(
-            (log) => [log.prefix, log.timestampUtc, log.message],
-          ),
-        ],
-      );
+      final file = await LogBuffer.instance.toCSVString();
 
       final bytes = utf8.encode(file);
 
-      final uri = Uri.tryParse(
-        '${Constants.telegramBaseUrl}/bot${widget.config.telegramBotToken}/sendDocument',
+      await _logbookRepository.sendLog(
+        widget.config.uri!,
+        bytes,
+        fileName: widget.config.debugFileName,
+        fields: widget.config.multipartFileFields,
       );
-
-      if (uri == null) throw Exception('Invalid URI');
-
-      final request = http.MultipartRequest('POST', uri)
-        ..fields['chat_id'] = widget.config.telegramChatId ?? ''
-        ..files.add(
-          http.MultipartFile.fromBytes(
-            'document',
-            bytes,
-            filename: 'debug_info.csv',
-          ),
-        );
-
-      final streamed = await request.send();
-      final response = await http.Response.fromStream(streamed);
-      final responseBody = json.decode(response.body);
-
-      l.i('Response: $responseBody');
     } on Object catch (e) {
       l.s('Error on save and send to telegram: $e');
     }
@@ -173,6 +126,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   @override
   void initState() {
     super.initState();
+
+    _logbookRepository = LogbookRepository();
+
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();
     _isSendingLogToTelegram = ValueNotifier(false);
@@ -195,37 +151,4 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   }
 
   /* #endregion */
-}
-
-/// Converts a list of rows to CSV format in an isolate
-///
-/// Usage example:
-/// ```dart
-/// await Isolate.spawn(_listToCSV, [receivePort.sendPort, rows]);
-/// ```
-@pragma('vm:entry-point')
-void _listToCSV(List<Object> args) {
-  final receivePort = args[0] as SendPort;
-  final rows = args[1] as List<List<Object?>>? ?? [];
-
-  final buffer = StringBuffer();
-  for (var i = 0; i < rows.length; i++) {
-    final row = rows[i];
-
-    for (var j = 0; j < row.length; j++) {
-      // Escape values containing commas, quotes, or newlines
-      final value = row[j]?.toString() ?? '';
-
-      if (value.contains(',') || value.contains('"') || value.contains('\n')) {
-        buffer.write('"${value.replaceAll('"', '""')}"');
-      } else {
-        buffer.write(value);
-      }
-
-      if (j < row.length - 1) buffer.write(',');
-    }
-    if (i < rows.length - 1) buffer.write('\n');
-  }
-
-  receivePort.send(buffer.toString());
 }
