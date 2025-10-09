@@ -3,10 +3,10 @@
 A powerful, elegant, and developer-friendly logging package for Flutter applications. Logbook provides an intuitive overlay UI for viewing logs in real-time, with support for different log levels, color coding, and optional server integration for remote debugging.
 
 <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;">
-  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_1.png" width="200" alt="Logbook Overview">
-  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_2.png" width="200" alt="Logbook filter">
-  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_3.png" width="200" alt="Logbook filter">
-  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_4.png" width="200" alt="Logbook search">
+  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_1.png" width="180" alt="Logbook Overview">
+  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_2.png" width="180" alt="Logbook filter">
+  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_3.png" width="180" alt="Logbook filter">
+  <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_4.png" width="180" alt="Logbook search">
 </div>
 
 ## ✨ Features
@@ -228,8 +228,8 @@ l.log(Object message, String prefix, {
 
 ```dart
 const LogbookConfig({
-  String? uri,
-  String? multipartFileFields,
+  Uri? uri,
+  Map<String, String>? multipartFileFields,
   String debugFileName = 'debug_info.csv',
   bool enabled = kDebugMode,
 });
