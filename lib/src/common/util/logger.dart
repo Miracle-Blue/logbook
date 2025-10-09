@@ -20,24 +20,28 @@ final class _L {
   /// {@macro logger}
   _L._();
 
+  /// {@macro logger_f}
   final void Function(Object? message) f = _log(
     'F',
     font: ConsoleFont.bold.value,
     foreground: ConsoleColor.black.foregroundValue,
   );
 
+  /// {@macro logger_c}
   void Function(Object? message) c = _log(
     'C',
     font: ConsoleFont.bold.value,
     foreground: ConsoleColor.green.foregroundValue,
   );
 
+  /// {@macro logger_i}
   void Function(Object? message) i = _log(
     'I',
     font: ConsoleFont.bold.value,
     foreground: ConsoleColor.blue.foregroundValue,
   );
 
+  /// {@macro logger_w}
   void Function(Object exception, [StackTrace? stackTrace, String? reason]) w =
       _log(
         'W',
@@ -46,6 +50,7 @@ final class _L {
         background: ConsoleColor.black.backgroundValue,
       );
 
+  /// {@macro logger_s}
   void Function(Object exception, [StackTrace? stackTrace, String? reason]) s =
       _log(
         'S',
@@ -53,6 +58,7 @@ final class _L {
         foreground: ConsoleColor.red.foregroundValue,
       );
 
+  /// {@macro logger_log}
   void log(
     Object message,
     String prefix, {
@@ -120,6 +126,9 @@ final class _L {
 /// Extension methods for [_L].
 extension _LX on _L {}
 
+/// {@template format_styled}
+/// Format styled.
+/// {@endtemplate}
 String _formatStyled(
   Object message,
   String prefix, {

@@ -4,35 +4,46 @@ part of 'logbook_screen.dart';
 /// Log viewer screen state.
 /// {@endtemplate}
 abstract class LogViewerScreenState extends State<LogViewerScreen> {
+  /// Scroll controller
   late final ScrollController _scrollController;
-  late final FocusNode _searchFocusNode;
-  late final ValueNotifier<bool> _isSendingLogToTelegram;
 
+  /// Search focus node
+  late final FocusNode _searchFocusNode;
+
+  /// Is sending log to server
+  late final ValueNotifier<bool> _isSendingLogToServer;
+
+  /// Logbook repository
   late final ILogbookRepository _logbookRepository;
 
-  bool get sendingLogToTelegramEnabled => widget.config.uri != null;
+  /// Sending log to server enabled
+  bool get sendingLogToServerEnabled => widget.config.uri != null;
 
+  /// All filter
   static const _allFilter = 'All';
+
+  /// Selected filter
   String selectedFilter = 'All';
 
+  /// Is search enabled
   bool _isSearchEnabled = false;
+
+  /// Search results
   final List<LogMessage> _searchResults = [];
 
-  List<LogMessage> get logMessages => _searchResults.isEmpty
-      ? LogBuffer.instance.logs.toList()
-      : _searchResults;
+  /// Log messages
+  List<LogMessage> get logMessages => _searchResults.isEmpty ? LogBuffer.instance.logs.toList() : _searchResults;
 
+  /// Filter items
   List<String> get filterItems {
-    final items = LogBuffer.instance.logs
-        .map<String>((log) => log.prefix)
-        .toSet()
-        .toList();
+    final items = LogBuffer.instance.logs.map<String>((log) => log.prefix).toSet().toList();
 
     return items
       ..sort()
       ..insert(0, _allFilter);
   }
 
+  /// Method that handles the search tap
   void _onSearchTap() {
     setState(() => _isSearchEnabled = !_isSearchEnabled);
 
@@ -42,6 +53,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     }
   }
 
+  /// Method that handles the search changed
   void _onSearchChanged(String value) {
     final query = value.trim();
 
@@ -65,6 +77,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     setState(() {});
   }
 
+  /// Method that handles the filter tap
   void _onFilterTap(String value) {
     selectedFilter = value;
 
@@ -73,17 +86,16 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     } else {
       _searchResults
         ..clear()
-        ..addAll(
-          LogBuffer.instance.logs.where((log) => log.prefix == selectedFilter),
-        );
+        ..addAll(LogBuffer.instance.logs.where((log) => log.prefix == selectedFilter));
     }
 
     setState(() {});
   }
 
-  Future<void> onSaveAndSendToTelegramTap() async {
-    if (!sendingLogToTelegramEnabled) {
-      l.w('Sending log to telegram is not enabled');
+  /// Method that handles the save and send to server tap
+  Future<void> onSaveAndSendToServerTap() async {
+    if (!sendingLogToServerEnabled) {
+      l.w('Sending log to server is not enabled');
 
       ScaffoldMessenger.of(context)
         ..removeCurrentSnackBar()
@@ -91,7 +103,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
           const SnackBar(
             duration: Duration(seconds: 8),
             content: Text(
-              'Sending log to telegram is not enabled please set telegram bot token and chat id in logbook config otherwise read logbook documentation for more information',
+              'Sending log to server is not enabled please set server uri (optional: multipart file fields) in logbook config otherwise read logbook documentation for more information',
             ),
           ),
         );
@@ -99,8 +111,8 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       return;
     }
 
-    if (_isSendingLogToTelegram.value) return;
-    _isSendingLogToTelegram.value = true;
+    if (_isSendingLogToServer.value) return;
+    _isSendingLogToServer.value = true;
 
     HapticFeedback.selectionClick().ignore();
 
@@ -116,10 +128,10 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
         fields: widget.config.multipartFileFields,
       );
     } on Object catch (e) {
-      l.s('Error on save and send to telegram: $e');
+      l.s('Error on save and send to server: $e');
     }
 
-    _isSendingLogToTelegram.value = false;
+    _isSendingLogToServer.value = false;
   }
 
   /* #region Lifecycle */
@@ -127,11 +139,11 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   void initState() {
     super.initState();
 
-    _logbookRepository = LogbookRepository();
+    _logbookRepository = const LogbookRepositoryImpl();
 
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();
-    _isSendingLogToTelegram = ValueNotifier(false);
+    _isSendingLogToServer = ValueNotifier(false);
 
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => _scrollController.animateTo(
@@ -146,7 +158,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   void dispose() {
     _searchFocusNode.dispose();
     _scrollController.dispose();
-    _isSendingLogToTelegram.dispose();
+    _isSendingLogToServer.dispose();
     super.dispose();
   }
 

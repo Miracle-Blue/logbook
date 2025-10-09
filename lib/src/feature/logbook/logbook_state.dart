@@ -1,11 +1,21 @@
 part of 'logbook.dart';
 
+/// {@template logbook_state}
+/// Logbook state.
+/// {@endtemplate}
 abstract class LogbookState extends State<Logbook>
     with SingleTickerProviderStateMixin {
+
+  /// Animation controller
   late final AnimationController _controller;
+
+  /// Dismissed
   late final ValueNotifier<bool> dismissed;
+
+  /// Handle width
   final double handleWidth = 16;
 
+  /// Config
   LogbookConfig get config => widget.config ?? const LogbookConfig();
 
   /// Method that handles the horizontal drag update
@@ -43,6 +53,7 @@ abstract class LogbookState extends State<Logbook>
     }
   }
 
+  /// Method that handles the animation status changed
   void _onStatusChanged(AnimationStatus status) => switch (status) {
     _ when !mounted => null,
     AnimationStatus.dismissed => () {

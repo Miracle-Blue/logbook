@@ -44,10 +44,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
             )
           : Text(
               'Debug console',
-              style: TextStyle(
-                color: LoggerColors.of(context).consoleWhite,
-                fontWeight: FontWeight.w600,
-              ),
+              style: TextStyle(color: LoggerColors.of(context).consoleWhite, fontWeight: FontWeight.w600),
             ),
       actions: [
         PopupMenuButton<String>(
@@ -69,18 +66,13 @@ class _LogViewerScreenState extends LogViewerScreenState {
                       Text(
                         e,
                         style: TextStyle(
-                          color: selectedFilter == e
-                              ? LoggerColors.of(context).brilliantAzure
-                              : null,
+                          color: selectedFilter == e ? LoggerColors.of(context).brilliantAzure : null,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
 
                       if (selectedFilter == e)
-                        Icon(
-                          Icons.check_rounded,
-                          color: LoggerColors.of(context).brilliantAzure,
-                        ),
+                        Icon(Icons.check_rounded, color: LoggerColors.of(context).brilliantAzure),
                     ],
                   ),
                 ),
@@ -90,10 +82,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
 
         IconButton(
           onPressed: _onSearchTap,
-          icon: Icon(
-            Icons.search_rounded,
-            color: LoggerColors.of(context).consoleWhite,
-          ),
+          icon: Icon(Icons.search_rounded, color: LoggerColors.of(context).consoleWhite),
         ),
       ],
     ),
@@ -116,52 +105,34 @@ class _LogViewerScreenState extends LogViewerScreenState {
                       // Prefix
                       TextSpan(
                         text: '[',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: LoggerColors.of(context).brilliantAzure, fontWeight: FontWeight.w500),
                       ),
                       TextSpan(
                         text: log.prefix,
-                        style: TextStyle(
-                          color: log.color.consoleColorToColor(context),
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: log.color.consoleColorToColor(context), fontWeight: FontWeight.w500),
                       ),
                       TextSpan(
                         text: '] ',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: LoggerColors.of(context).brilliantAzure, fontWeight: FontWeight.w500),
                       ),
 
                       // Timestamp
                       TextSpan(
                         text: '[${log.timestamp}] ',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
-                          fontWeight: FontWeight.w500,
-                        ),
+                        style: TextStyle(color: LoggerColors.of(context).brilliantAzure, fontWeight: FontWeight.w500),
                       ),
 
                       // Message
                       TextSpan(
                         text: log.message,
-                        style: TextStyle(
-                          color: log.color.consoleColorToColor(context),
-                          fontWeight: FontWeight.w400,
-                        ),
+                        style: TextStyle(color: log.color.consoleColorToColor(context), fontWeight: FontWeight.w400),
                       ),
                     ],
                   ),
                 );
 
                 if (index % 2 == 0) {
-                  return ColoredBox(
-                    color: LoggerColors.of(context).gray.withAlpha(30),
-                    child: child,
-                  );
+                  return ColoredBox(color: LoggerColors.of(context).gray.withAlpha(30), child: child);
                 } else {
                   return child;
                 }
@@ -174,10 +145,10 @@ class _LogViewerScreenState extends LogViewerScreenState {
       ),
     ),
     floatingActionButton: ValueListenableBuilder(
-      valueListenable: _isSendingLogToTelegram,
+      valueListenable: _isSendingLogToServer,
       builder: (context, isLoading, child) => FloatingActionButton(
         backgroundColor: LoggerColors.of(context).consoleWhite,
-        onPressed: onSaveAndSendToTelegramTap,
+        onPressed: onSaveAndSendToServerTap,
         child: AnimatedSwitcher(
           duration: const Duration(milliseconds: 200),
           child: switch (isLoading) {
@@ -190,10 +161,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                 ),
               ),
             ),
-            false => Icon(
-              Icons.upload_file,
-              color: LoggerColors.of(context).loggerBackground,
-            ),
+            false => Icon(Icons.upload_file, color: LoggerColors.of(context).loggerBackground),
           },
         ),
       ),

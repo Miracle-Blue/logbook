@@ -3,6 +3,9 @@ import 'dart:isolate';
 
 import '../../feature/logbook/log_buffer.dart';
 
+/// {@template log_message_to_csv}
+/// Log message to CSV extension.
+/// {@endtemplate}
 extension LogMessageToCSV on LogBuffer {
   /// CSV BOM for correct csv file formatting
   static const String _csvBom = '\uFEFF';

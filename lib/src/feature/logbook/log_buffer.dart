@@ -5,15 +5,26 @@ import 'package:flutter/foundation.dart' show ChangeNotifier;
 
 import '../../common/model/log_message.dart';
 
-/// Log buffer
-class LogBuffer with ChangeNotifier {
+/// {@template log_buffer}
+/// Log buffer.
+/// {@endtemplate}
+final class LogBuffer with ChangeNotifier {
+  /// {@macro log_buffer}
   LogBuffer._internal();
+
+  /// {@macro log_buffer_instance}
   static final LogBuffer _instance = LogBuffer._internal();
+
+  /// Instance
   static LogBuffer get instance => _instance;
 
-  static const int bufferLimit =
-      65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
+  /// Buffer limit
+  static const int bufferLimit = 65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
+
+  /// Queue
   final Queue<LogMessage> _queue = Queue<LogMessage>();
+
+  /// Notification scheduled
   bool _notificationScheduled = false;
 
   /// Get the logs

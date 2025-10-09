@@ -1,6 +1,6 @@
 # 📚 Logbook
 
-A powerful, elegant, and developer-friendly logging package for Flutter applications. Logbook provides an intuitive overlay UI for viewing logs in real-time, with support for different log levels, color coding, and optional Telegram integration for remote debugging.
+A powerful, elegant, and developer-friendly logging package for Flutter applications. Logbook provides an intuitive overlay UI for viewing logs in real-time, with support for different log levels, color coding, and optional server integration for remote debugging.
 
 <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;">
   <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_1.png" width="200" alt="Logbook Overview">
@@ -14,7 +14,7 @@ A powerful, elegant, and developer-friendly logging package for Flutter applicat
 - 🎨 **Comprehensive UI Overlay** - Slide-in panel with color-coded logs
 - 📊 **Multiple Log Levels** - Fine, Config, Info, Warning, Severe, and Custom
 - 🔍 **Real-Time Viewing** - See logs as they happen in your app
-- 📱 **Telegram Integration** - Send logs to Telegram for remote debugging in .csv format
+- 📱 **Sever Integration** - Send logs to your sever for remote debugging in CSV format
 - 🚀 **Lightweight** - Minimal performance impact
 - 🔧 **Configurable** - Enable/disable in different environments
 - 📦 **No Dependencies** - Only depends on Flutter SDK and http package
@@ -159,10 +159,10 @@ Configure Logbook behavior with `LogbookConfig`:
 ```dart
 Logbook(
   config: LogbookConfig(
-    enabled: kDebugMode,              // Enable only in debug mode
-    debugFileName: 'app_logs.csv',    // CSV export filename
-    telegramBotToken: 'YOUR_BOT_TOKEN',  // Optional: Telegram bot token
-    telegramChatId: 'YOUR_CHAT_ID',      // Optional: Telegram chat ID
+    enabled: kDebugMode,                                // Enable only in debug mode
+    debugFileName: 'app_logs.csv',                      // CSV export filename
+    uri: 'YOUR_SEVER_URI',                              // Optional: Server URI
+    multipartFileFields: 'YOUR_MULTIPART_FILE_FIELDS',  // Optional: Multipart file fields
   ),
   child: child ?? const SizedBox.shrink(),
 )
@@ -173,45 +173,9 @@ Logbook(
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `enabled` | `bool` | `kDebugMode` | Enable/disable the logbook overlay |
-| `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports to Telegram |
-| `telegramBotToken` | `String?` | `null` | Telegram bot token for remote logging |
-| `telegramChatId` | `String?` | `null` | Telegram chat ID to send logs to |
-
----
-
-## 🚀 Advanced Features
-
-### Telegram Integration
-
-Send logs to a Telegram bot for remote debugging:
-
-#### 1. Create a Telegram Bot
-
-1. Message [@BotFather](https://t.me/botfather) on Telegram
-2. Send `/newbot` and follow instructions
-3. Copy your bot token
-
-#### 2. Get Your Chat ID
-
-1. Start a chat with your bot
-2. Send any message
-3. Visit: `https://api.telegram.org/bot<YOUR_BOT_TOKEN>/getUpdates`
-4. Find your `chat_id` in the response
-
-#### 3. Configure Logbook
-
-```dart
-Logbook(
-  config: LogbookConfig(
-    enabled: true,
-    telegramBotToken: 'YOUR_BOT_TOKEN',
-    telegramChatId: 'YOUR_CHAT_ID',
-  ),
-  child: child,
-)
-```
-
-Now you can send logs to Telegram and export them as CSV files!
+| `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports to server |
+| `uri` | `String?` | `null` | Server URI for remote logging |
+| `multipartFileFields` | `String?` | `null` | Multipart file fields for remote logging |
 
 ---
 
@@ -264,8 +228,8 @@ l.log(Object message, String prefix, {
 
 ```dart
 const LogbookConfig({
-  String? telegramBotToken,
-  String? telegramChatId,
+  String? uri,
+  String? multipartFileFields,
   String debugFileName = 'debug_info.csv',
   bool enabled = kDebugMode,
 });

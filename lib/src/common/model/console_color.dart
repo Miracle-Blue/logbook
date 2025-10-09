@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 
 import '../util/logger_colors.dart';
 
+/// {@template console_color}
 /// Available console colors
+/// {@endtemplate}
 enum ConsoleColor {
   black,
   red,
@@ -14,9 +16,11 @@ enum ConsoleColor {
   white,
   byDefault;
 
+  /// {@macro console_color}
   const ConsoleColor();
 }
 
+/// Extension methods for [ConsoleColor].
 extension ConsoleColorX on ConsoleColor {
   /// Ansi foreground colors for terminal
   String get foregroundValue => switch (this) {
@@ -44,6 +48,7 @@ extension ConsoleColorX on ConsoleColor {
     ConsoleColor.byDefault => '',
   };
 
+  /// Converts the console color to a color.
   Color consoleColorToColor(BuildContext context) {
     final loggerColors = LoggerColors.of(context);
 
