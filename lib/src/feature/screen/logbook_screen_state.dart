@@ -32,11 +32,16 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   final List<LogMessage> _searchResults = [];
 
   /// Log messages
-  List<LogMessage> get logMessages => _searchResults.isEmpty ? LogBuffer.instance.logs.toList() : _searchResults;
+  List<LogMessage> get logMessages => _searchResults.isEmpty
+      ? LogBuffer.instance.logs.toList()
+      : _searchResults;
 
   /// Filter items
   List<String> get filterItems {
-    final items = LogBuffer.instance.logs.map<String>((log) => log.prefix).toSet().toList();
+    final items = LogBuffer.instance.logs
+        .map<String>((log) => log.prefix)
+        .toSet()
+        .toList();
 
     return items
       ..sort()
@@ -86,7 +91,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     } else {
       _searchResults
         ..clear()
-        ..addAll(LogBuffer.instance.logs.where((log) => log.prefix == selectedFilter));
+        ..addAll(
+          LogBuffer.instance.logs.where((log) => log.prefix == selectedFilter),
+        );
     }
 
     setState(() {});

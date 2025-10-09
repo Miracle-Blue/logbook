@@ -1,3 +1,6 @@
+## 0.1.1
+* Pub score fixed
+
 ## 0.1.0
 * Initial stable release
 

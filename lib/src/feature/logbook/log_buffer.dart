@@ -19,7 +19,8 @@ final class LogBuffer with ChangeNotifier {
   static LogBuffer get instance => _instance;
 
   /// Buffer limit
-  static const int bufferLimit = 65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
+  static const int bufferLimit =
+      65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
 
   /// Queue
   final Queue<LogMessage> _queue = Queue<LogMessage>();
@@ -48,7 +49,9 @@ final class LogBuffer with ChangeNotifier {
     final list = logs.take(bufferLimit).toList();
     if (_queue.length + list.length > bufferLimit) {
       final toRemove = _queue.length + list.length - bufferLimit;
-      for (var i = 0; i < toRemove; i++) _queue.removeFirst();
+      for (var i = 0; i < toRemove; i++) {
+        _queue.removeFirst();
+      }
     }
     _queue.addAll(list);
     _scheduleNotification();
