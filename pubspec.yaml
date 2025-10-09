@@ -6,14 +6,13 @@ homepage: https://github.com/Miracle-Blue/logbook
 issue_tracker: https://github.com/Miracle-Blue/logbook/issues
 
 environment:
-  sdk: ^3.9.2
-  flutter: ">=1.17.0"
+  sdk: ^3.8.0
 
 dependencies:
   flutter:
     sdk: flutter
 
-  http: ^1.5.0
+  http: ^1.3.0
 
 dev_dependencies:
   flutter_test:
