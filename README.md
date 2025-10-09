@@ -1,11 +1,5 @@
 # 📚 Logbook
 
-<p align="center">
-  <img src="https://img.shields.io/pub/v/logbook.svg" alt="Pub Version">
-  <img src="https://img.shields.io/badge/flutter-%3E%3D3.8.0-blue.svg" alt="Flutter Version">
-  <img src="https://imThe first public release of Logbook - a powerful logging package for Flutter applications.g.shields.io/badge/license-MIT-green.svg" alt="License">
-</p>
-
 A powerful, elegant, and developer-friendly logging package for Flutter applications. Logbook provides an intuitive overlay UI for viewing logs in real-time, with support for different log levels, color coding, and optional Telegram integration for remote debugging.
 
 <div style="display: flex; flex-direction: row; flex-wrap: wrap; gap: 10px;">
@@ -15,17 +9,12 @@ A powerful, elegant, and developer-friendly logging package for Flutter applicat
   <img src="https://github.com/Miracle-Blue/logbook/raw/main/screenshots/screenshot_4.png" width="200" alt="Logbook search">
 </div>
 
----
-
 ## ✨ Features
 
-- 🎨 **Beautiful UI Overlay** - Slide-in panel with color-coded logs
+- 🎨 **Comprehensive UI Overlay** - Slide-in panel with color-coded logs
 - 📊 **Multiple Log Levels** - Fine, Config, Info, Warning, Severe, and Custom
-- 🌈 **Color-Coded Logs** - Easy visual identification of log types
 - 🔍 **Real-Time Viewing** - See logs as they happen in your app
-- 📱 **Telegram Integration** - Send logs to Telegram for remote debugging
-- 💾 **CSV Export** - Export logs for analysis
-- 🎯 **Type-Safe API** - Strongly typed with full null-safety support
+- 📱 **Telegram Integration** - Send logs to Telegram for remote debugging in .csv format
 - 🚀 **Lightweight** - Minimal performance impact
 - 🔧 **Configurable** - Enable/disable in different environments
 - 📦 **No Dependencies** - Only depends on Flutter SDK and http package
@@ -38,7 +27,7 @@ Add `logbook` to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
-  logbook: ^0.0.1
+  logbook: ^0.0.1 # Replace with actual version
 ```
 
 Then run:
@@ -184,94 +173,9 @@ Logbook(
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `enabled` | `bool` | `kDebugMode` | Enable/disable the logbook overlay |
-| `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports |
+| `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports to Telegram |
 | `telegramBotToken` | `String?` | `null` | Telegram bot token for remote logging |
 | `telegramChatId` | `String?` | `null` | Telegram chat ID to send logs to |
-
-### Environment-Specific Configuration
-
-```dart
-// Development
-const devConfig = LogbookConfig(
-  enabled: true,
-  debugFileName: 'dev_logs.csv',
-);
-
-// Production (disabled)
-const prodConfig = LogbookConfig(
-  enabled: false,
-);
-
-// Use based on environment
-Logbook(
-  config: kDebugMode ? devConfig : prodConfig,
-  child: child,
-)
-```
-
----
-
-## 🎨 Log Types Reference
-
-### Fine (`l.f`)
-**Purpose:** Detailed debugging information
-**Color:** Black
-**Use Case:** Verbose logs, method entry/exit, variable values
-
-```dart
-l.f('Fetching user profile for ID: $userId');
-l.f('Response received: ${response.statusCode}');
-```
-
-### Config (`l.c`)
-**Purpose:** Configuration and setup information
-**Color:** Green
-**Use Case:** App initialization, configuration values, feature flags
-
-```dart
-l.c('API base URL: ${Config.apiUrl}');
-l.c('Feature X enabled: ${FeatureFlags.featureX}');
-```
-
-### Info (`l.i`)
-**Purpose:** General informational messages
-**Color:** Blue
-**Use Case:** User actions, state changes, important events
-
-```dart
-l.i('User logged in: ${user.email}');
-l.i('Payment processed successfully');
-```
-
-### Warning (`l.w`)
-**Purpose:** Potential issues that don't prevent operation
-**Color:** Yellow/Orange
-**Use Case:** Deprecated API usage, slow performance, recoverable errors
-
-```dart
-l.w('API response time exceeded 3 seconds');
-l.w(Exception('Retrying failed request'), StackTrace.current);
-```
-
-### Severe (`l.s`)
-**Purpose:** Serious errors and exceptions
-**Color:** Red
-**Use Case:** Exceptions, failed operations, critical errors
-
-```dart
-l.s('Failed to connect to database', stackTrace);
-l.s(Exception('Payment failed'), StackTrace.current, 'Critical');
-```
-
-### Custom (`l.log`)
-**Purpose:** Custom log types for specific needs
-**Color:** Purple
-**Use Case:** Analytics events, business logic tracking, custom categories
-
-```dart
-l.log('User completed onboarding', 'ANALYTICS');
-l.log('Feature flag toggled: $flagName', 'FEATURE_FLAG');
-```
 
 ---
 
@@ -300,114 +204,14 @@ Send logs to a Telegram bot for remote debugging:
 Logbook(
   config: LogbookConfig(
     enabled: true,
-    telegramBotToken: '123456789:ABCdefGHIjklMNOpqrsTUVwxyz',
-    telegramChatId: '987654321',
+    telegramBotToken: 'YOUR_BOT_TOKEN',
+    telegramChatId: 'YOUR_CHAT_ID',
   ),
   child: child,
 )
 ```
 
 Now you can send logs to Telegram and export them as CSV files!
-
-### CSV Export
-
-Logs can be exported as CSV files for analysis:
-
-- The filename is configurable via `debugFileName` in `LogbookConfig`
-- Format: `[PREFIX] [TIMESTAMP] MESSAGE`
-- Can be sent via Telegram for remote access
-
----
-
-## 🎯 Best Practices
-
-### 1. Use Appropriate Log Levels
-
-```dart
-// ✅ Good
-l.i('User action: Clicked checkout button');
-l.w('API response time: ${duration.inMilliseconds}ms');
-l.s('Payment failed: $errorMessage', stackTrace);
-
-// ❌ Bad
-l.i('Variable x = $x'); // Too verbose for info
-l.s('Button clicked');  // Not a severe error
-```
-
-### 2. Include Context
-
-```dart
-// ✅ Good
-l.i('User ${user.id} updated profile: ${changes.keys.join(", ")}');
-
-// ❌ Bad
-l.i('Profile updated');
-```
-
-### 3. Log Meaningful Information
-
-```dart
-// ✅ Good
-l.w(
-  'Network request failed: ${response.statusCode}',
-  StackTrace.current,
-  'Endpoint: $endpoint',
-);
-
-// ❌ Bad
-l.w('Error');
-```
-
-### 4. Don't Log Sensitive Information
-
-```dart
-// ✅ Good
-l.i('User authenticated: ${user.id}');
-
-// ❌ Bad - NEVER DO THIS
-l.i('Login: ${user.email}, Password: ${user.password}');
-```
-
-### 5. Clean Up in Production
-
-```dart
-// Always disable in production builds
-Logbook(
-  config: LogbookConfig(
-    enabled: kDebugMode, // Only enabled in debug mode
-  ),
-  child: child,
-)
-```
-
-### 6. Use Descriptive Custom Logs
-
-```dart
-// ✅ Good
-l.log('User completed level 5', 'GAME_EVENT');
-l.log('A/B Test variant B shown', 'ANALYTICS');
-
-// ❌ Bad
-l.log('Event', 'EVENT');
-```
-
----
-
-## 🖥️ Viewing Logs
-
-### In-App Overlay
-
-1. **Open**: Tap the small handle on the left side of the screen
-2. **Navigate**: Scroll through logs
-3. **Filter**: Use the filter options (if available)
-4. **Close**: Tap the handle again or tap outside the panel
-
-### Console Output
-
-All logs are also printed to the debug console with:
-- Timestamps
-- Color coding
-- Stack traces (when provided)
 
 ---
 
@@ -426,53 +230,6 @@ The example app demonstrates:
 - Error handling
 - Background timer logs
 - Beautiful UI showcasing the package
-
----
-
-## 🤔 FAQ
-
-### Q: Does Logbook affect performance?
-
-**A:** Logbook has minimal performance impact. Logs are buffered efficiently and the UI overlay only renders when opened. In production (when `enabled: false`), there's virtually no overhead.
-
-### Q: Can I use Logbook in production?
-
-**A:** While you can, it's recommended to disable it in production builds by setting `enabled: false` or `enabled: kDebugMode`.
-
-### Q: How many logs can be stored?
-
-**A:** The log buffer has a limit of 65,536 messages (64KB). Older logs are automatically removed when this limit is reached.
-
-### Q: Can I customize the log colors?
-
-**A:** Currently, log colors are predefined. Custom color support may be added in future versions.
-
-### Q: Does it work on all platforms?
-
-**A:** Yes! Logbook works on iOS, Android, Web, macOS, Linux, and Windows.
-
----
-
-## 🐛 Troubleshooting
-
-### Logs not appearing
-
-1. Check that `enabled: true` in `LogbookConfig`
-2. Verify you're running in debug mode if using `enabled: kDebugMode`
-3. Make sure the `Logbook` widget is wrapping your app
-
-### Overlay not visible
-
-1. Ensure your app has `MaterialApp` or `CupertinoApp`
-2. Check that there are no full-screen overlays blocking the handle
-3. Try restarting the app
-
-### Telegram logs not sending
-
-1. Verify your bot token is correct
-2. Ensure your chat ID is accurate
-3. Check your internet connection
-4. Make sure you've started a chat with your bot
 
 ---
 
@@ -529,84 +286,14 @@ LogBuffer.instance.add(logMessage); // Add a log
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-### Development Setup
-
-```bash
-# Clone the repository
-git clone https://github.com/Miracle-Blue/logbook.git
-
-# Navigate to the project
-cd logbook
-
-# Get dependencies
-flutter pub get
-
-# Run tests
-flutter test
-
-# Run example app
-cd example
-flutter run
-```
-
-### Guidelines
-
-- Follow the existing code style
-- Add tests for new features
-- Update documentation
-- Keep commits focused and descriptive
-
 ---
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-```
-MIT License
-
-Copyright (c) 2025 Ravshan
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction...
-```
-
----
-
-## 🙏 Acknowledgments
-
-- Thanks to all contributors
-- Inspired by the need for better debugging tools in Flutter
-- Built with ❤️ for the Flutter community
-
----
-
-## 📞 Support
-
-- 🐛 **Issues**: [GitHub Issues](https://github.com/Miracle-Blue/logbook/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/Miracle-Blue/logbook/discussions)
-- 📧 **Email**: Contact the maintainers
-
----
-
-## 🗺️ Roadmap
-
-- [ ] Log filtering by type
-- [ ] Search functionality
-- [ ] Export logs to file
-- [ ] Custom color schemes
-- [ ] Performance metrics
-- [ ] Network request logging
-- [ ] Screenshot capture with logs
-- [ ] Dark/Light theme toggle
-
 ---
 
 <p align="center">
-  Made with ❤️ by <a href="https://github.com/Miracle-Blue">Ravshan</a>
-</p>
-
-<p align="center">
-  If you find this package useful, please give it a ⭐ on <a href="https://github.com/Miracle-Blue/logbook">GitHub</a>!
+  If you find this package useful, give it a ⭐ on <a href="https://github.com/Miracle-Blue/logbook">GitHub</a>!
 </p>
