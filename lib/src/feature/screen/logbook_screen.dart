@@ -41,13 +41,19 @@ class _LogViewerScreenState extends LogViewerScreenState {
               focusNode: _searchFocusNode,
               onChanged: _onSearchChanged,
               decoration: const InputDecoration(border: InputBorder.none),
-              style: TextStyle(color: LoggerColors.of(context).consoleWhite),
+              style: TextStyle(
+                color: LoggerColors.of(context).consoleWhite,
+                fontFamily: fontFamily,
+                letterSpacing: -0.5,
+              ),
             )
           : Text(
               'Debug console',
               style: TextStyle(
                 color: LoggerColors.of(context).consoleWhite,
                 fontWeight: FontWeight.w600,
+                fontFamily: fontFamily,
+                letterSpacing: -0.5,
               ),
             ),
       actions: [
@@ -74,6 +80,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                               ? LoggerColors.of(context).brilliantAzure
                               : LoggerColors.of(context).consoleWhite,
                           fontWeight: FontWeight.w500,
+                          fontFamily: fontFamily,
                         ),
                       ),
 
@@ -111,39 +118,50 @@ class _LogViewerScreenState extends LogViewerScreenState {
               itemBuilder: (context, index) {
                 final log = logMessages.elementAt(index);
 
-                final child = SelectableText.rich(
-                  TextSpan(
-                    children: [
-                      // Prefix
-                      TextSpan(
-                        text: '[${log.prefix}] ',
-                        style: TextStyle(
-                          color: log.color.consoleColorToColor(context),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 11,
+                final child = Theme(
+                  data: Theme.of(context).copyWith(
+                    textTheme: Theme.of(
+                      context,
+                    ).textTheme.apply(fontFamily: fontFamily),
+                  ),
+                  child: SelectableText.rich(
+                    style: TextStyle(fontFamily: fontFamily, height: 0),
+                    TextSpan(
+                      children: [
+                        // Prefix
+                        TextSpan(
+                          text: '[${log.prefix}]',
+                          style: TextStyle(
+                            color: log.color.consoleColorToColor(context),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
 
-                      // Timestamp
-                      TextSpan(
-                        text: '[${log.timestamp}] ',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 11,
+                        // Timestamp
+                        TextSpan(
+                          text: '[${log.timestamp}] ',
+                          style: TextStyle(
+                            color: LoggerColors.of(context).brilliantAzure,
+                            fontWeight: FontWeight.w500,
+                            fontSize: 11,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
 
-                      // Message
-                      TextSpan(
-                        text: log.message,
-                        style: TextStyle(
-                          color: log.color.consoleColorToColor(context),
-                          fontWeight: FontWeight.w400,
-                          fontSize: 11,
+                        // Message
+                        TextSpan(
+                          text: log.message,
+                          style: TextStyle(
+                            color: log.color.consoleColorToColor(context),
+                            fontWeight: FontWeight.w400,
+                            fontSize: 11,
+                            letterSpacing: -0.5,
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 );
 

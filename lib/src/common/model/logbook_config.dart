@@ -11,6 +11,7 @@ final class LogbookConfig {
     this.multipartFileFields,
     this.debugFileName = 'debug_info.csv',
     this.enabled = kDebugMode,
+    this.fontFamily = 'Monospace',
   });
 
   /// Your server URI.
@@ -25,7 +26,10 @@ final class LogbookConfig {
   /// Whether to enable logbook.
   final bool enabled;
 
+  /// Font family to use for the logbook.
+  final String fontFamily;
+
   @override
   String toString() =>
-      'LogbookConfig(uri: $uri, multipartFileFields: $multipartFileFields, debugFileName: $debugFileName, enabled: $enabled)';
+      'LogbookConfig(uri: $uri, multipartFileFields: $multipartFileFields, debugFileName: $debugFileName, enabled: $enabled, fontFamily: $fontFamily)';
 }

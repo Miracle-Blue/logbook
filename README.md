@@ -163,6 +163,7 @@ Logbook(
     debugFileName: 'app_logs.csv',                      // CSV export filename
     uri: 'YOUR_SEVER_URI',                              // Optional: Server URI
     multipartFileFields: 'YOUR_MULTIPART_FILE_FIELDS',  // Optional: Multipart file fields
+    fontFamily: 'Monospace',                            // Optional: Font family
   ),
   child: child ?? const SizedBox.shrink(),
 )
@@ -176,6 +177,7 @@ Logbook(
 | `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports to server |
 | `uri` | `String?` | `null` | Server URI for remote logging |
 | `multipartFileFields` | `String?` | `null` | Multipart file fields for remote logging |
+| `fontFamily` | `String` | `'Monospace'` | Font family for the logbook |
 
 ---
 
@@ -232,6 +234,7 @@ const LogbookConfig({
   Map<String, String>? multipartFileFields,
   String debugFileName = 'debug_info.csv',
   bool enabled = kDebugMode,
+  String fontFamily = 'Monospace',
 });
 ```
 

@@ -4,6 +4,9 @@ part of 'logbook_screen.dart';
 /// Log viewer screen state.
 /// {@endtemplate}
 abstract class LogViewerScreenState extends State<LogViewerScreen> {
+  /// Font family
+  String get fontFamily => widget.config.fontFamily;
+
   /// Scroll controller
   late final ScrollController _scrollController;
 
