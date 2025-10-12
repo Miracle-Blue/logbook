@@ -119,6 +119,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: LoggerColors.of(context).brilliantAzure,
                           fontWeight: FontWeight.w500,
+                          fontSize: 11,
                         ),
                       ),
                       TextSpan(
@@ -126,6 +127,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: log.color.consoleColorToColor(context),
                           fontWeight: FontWeight.w500,
+                          fontSize: 11,
                         ),
                       ),
                       TextSpan(
@@ -133,6 +135,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: LoggerColors.of(context).brilliantAzure,
                           fontWeight: FontWeight.w500,
+                          fontSize: 11,
                         ),
                       ),
 
@@ -142,6 +145,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: LoggerColors.of(context).brilliantAzure,
                           fontWeight: FontWeight.w500,
+                          fontSize: 11,
                         ),
                       ),
 
@@ -151,6 +155,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: log.color.consoleColorToColor(context),
                           fontWeight: FontWeight.w400,
+                          fontSize: 11,
                         ),
                       ),
                     ],
