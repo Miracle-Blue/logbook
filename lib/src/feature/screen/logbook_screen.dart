@@ -41,6 +41,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
               focusNode: _searchFocusNode,
               onChanged: _onSearchChanged,
               decoration: const InputDecoration(border: InputBorder.none),
+              style: TextStyle(color: LoggerColors.of(context).consoleWhite),
             )
           : Text(
               'Debug console',
@@ -71,7 +72,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                         style: TextStyle(
                           color: selectedFilter == e
                               ? LoggerColors.of(context).brilliantAzure
-                              : null,
+                              : LoggerColors.of(context).consoleWhite,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
@@ -115,25 +116,9 @@ class _LogViewerScreenState extends LogViewerScreenState {
                     children: [
                       // Prefix
                       TextSpan(
-                        text: '[',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
-                          fontWeight: FontWeight.w500,
-                          fontSize: 11,
-                        ),
-                      ),
-                      TextSpan(
-                        text: log.prefix,
+                        text: '[${log.prefix}] ',
                         style: TextStyle(
                           color: log.color.consoleColorToColor(context),
-                          fontWeight: FontWeight.w500,
-                          fontSize: 11,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '] ',
-                        style: TextStyle(
-                          color: LoggerColors.of(context).brilliantAzure,
                           fontWeight: FontWeight.w500,
                           fontSize: 11,
                         ),
