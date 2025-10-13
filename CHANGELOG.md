@@ -1,3 +1,6 @@
+## 0.1.3
+* Pub score fixed
+
 ## 0.1.2
 * logs fontSize changed to 11
 * add functionality to change font family
