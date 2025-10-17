@@ -137,8 +137,8 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
         fileName: widget.config.debugFileName,
         fields: widget.config.multipartFileFields,
       );
-    } on Object catch (e) {
-      l.s('Error on save and send to server: $e');
+    } on Object catch (e, s) {
+      l.s('Error on save and send to server: $e', s);
     }
 
     _isSendingLogToServer.value = false;
