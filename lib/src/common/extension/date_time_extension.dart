@@ -7,8 +7,8 @@ extension DateTimeX on DateTime? {
 
     if (time == null) return '';
 
-    String _timePad(int time) => time.toString().padLeft(2, '0');
+    String timePad(int time) => time.toString().padLeft(2, '0');
 
-    return '${_timePad(time.hour)}:${_timePad(time.minute)}:${_timePad(time.second)}${withMilliseconds ? ':${_timePad(time.millisecond)}' : ''}';
+    return '${timePad(time.hour)}:${timePad(time.minute)}:${timePad(time.second)}${withMilliseconds ? ':${timePad(time.millisecond)}' : ''}';
   }
 }
