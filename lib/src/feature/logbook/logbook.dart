@@ -77,77 +77,92 @@ class _LogbookState extends LogbookState {
                         ),
                       ),
                     ),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                          child: Visibility(
-                            visible: !dismissed.value,
-                            maintainState: true,
-                            maintainAnimation: false,
-                            maintainSize: false,
-                            maintainInteractivity: false,
-                            maintainSemantics: false,
-                            child: Material(
-                              elevation: 0,
-                              child: DefaultSelectionStyle(
-                                child: ScaffoldMessenger(
-                                  child: HeroControllerScope.none(
-                                    child: Navigator(
-                                      pages: [
-                                        MaterialPage(
-                                          child: LogViewerScreen(
-                                            config: config,
-                                          ),
-                                        ),
-                                      ],
-                                      onDidRemovePage: (page) =>
-                                          log('ON DID REMOVE PAGE'),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
+                    child: Theme(
+                      data:
+                          switch (ThemeMode.dark) {
+                            ThemeMode.light => ThemeData.light(),
+                            ThemeMode.dark => ThemeData.dark(),
+                            _ => Theme.of(context),
+                          }.copyWith(
+                            textTheme: Theme.of(
+                              context,
+                            ).textTheme.apply(fontFamily: config.fontFamily),
                           ),
-                        ),
-
-                        Stack(
-                          children: [
-                            Align(
-                              child: SizedBox(
-                                width: handleWidth,
-                                height: 64,
-                                child: Material(
-                                  color: LoggerColors.of(context).consoleWhite,
-                                  borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(16),
-                                  ),
-                                  elevation: 0,
-                                  child: InkWell(
-                                    onTap: _controller.toggle,
-                                    borderRadius: const BorderRadius.horizontal(
-                                      right: Radius.circular(16),
-                                    ),
-                                    child: Center(
-                                      child: RotationTransition(
-                                        turns: _controller.drive(
-                                          Tween<double>(begin: 0, end: 0.5),
-                                        ),
-                                        child: Icon(
-                                          Icons.chevron_right,
-                                          size: 18,
-                                          color: LoggerColors.of(
-                                            context,
-                                          ).loggerBackground,
-                                        ),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                            child: Visibility(
+                              visible: !dismissed.value,
+                              maintainState: true,
+                              maintainAnimation: false,
+                              maintainSize: false,
+                              maintainInteractivity: false,
+                              maintainSemantics: false,
+                              child: Material(
+                                elevation: 0,
+                                child: DefaultSelectionStyle(
+                                  child: ScaffoldMessenger(
+                                    child: HeroControllerScope.none(
+                                      child: Navigator(
+                                        pages: [
+                                          MaterialPage(
+                                            child: LogViewerScreen(
+                                              config: config,
+                                            ),
+                                          ),
+                                        ],
+                                        onDidRemovePage: (page) =>
+                                            log('ON DID REMOVE PAGE'),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+
+                          Stack(
+                            children: [
+                              Align(
+                                child: SizedBox(
+                                  width: handleWidth,
+                                  height: 64,
+                                  child: Material(
+                                    color: LoggerColors.of(
+                                      context,
+                                    ).consoleWhite,
+                                    borderRadius: const BorderRadius.horizontal(
+                                      right: Radius.circular(16),
+                                    ),
+                                    elevation: 0,
+                                    child: InkWell(
+                                      onTap: _controller.toggle,
+                                      borderRadius:
+                                          const BorderRadius.horizontal(
+                                            right: Radius.circular(16),
+                                          ),
+                                      child: Center(
+                                        child: RotationTransition(
+                                          turns: _controller.drive(
+                                            Tween<double>(begin: 0, end: 0.5),
+                                          ),
+                                          child: Icon(
+                                            Icons.chevron_right,
+                                            size: 18,
+                                            color: LoggerColors.of(
+                                              context,
+                                            ).loggerBackground,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

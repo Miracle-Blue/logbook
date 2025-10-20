@@ -12,7 +12,7 @@
       "cwd": "${workspaceFolder}/example",
       "noDebug": true,
       "args": [
-        "--dart-define-from-file=${workspaceFolder}/config/development.json"
+        "--dart-define-from-file=${workspaceFolder}/example/config/development.json"
       ],
       "env": {}
     },

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -43,7 +44,6 @@ class _LogViewerScreenState extends LogViewerScreenState {
               decoration: const InputDecoration(border: InputBorder.none),
               style: TextStyle(
                 color: LoggerColors.of(context).consoleWhite,
-                fontFamily: fontFamily,
                 letterSpacing: -0.5,
               ),
             )
@@ -52,7 +52,6 @@ class _LogViewerScreenState extends LogViewerScreenState {
               style: TextStyle(
                 color: LoggerColors.of(context).consoleWhite,
                 fontWeight: FontWeight.w600,
-                fontFamily: fontFamily,
                 letterSpacing: -0.5,
               ),
             ),
@@ -80,7 +79,6 @@ class _LogViewerScreenState extends LogViewerScreenState {
                               ? LoggerColors.of(context).brilliantAzure
                               : LoggerColors.of(context).consoleWhite,
                           fontWeight: FontWeight.w500,
-                          fontFamily: fontFamily,
                         ),
                       ),
 
@@ -107,79 +105,82 @@ class _LogViewerScreenState extends LogViewerScreenState {
     ),
     body: ListenableBuilder(
       listenable: LogBuffer.instance,
-      builder: (context, child) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4),
-        child: CustomScrollView(
-          controller: _scrollController,
-          physics: const ClampingScrollPhysics(),
-          slivers: [
-            SliverList.builder(
-              itemCount: logMessages.length,
-              itemBuilder: (context, index) {
-                final log = logMessages.elementAt(index);
+      builder: (context, child) =>
+          NotificationListener<ScrollUpdateNotification>(
+            onNotification: _onScrolled,
+            child: Scrollbar(
+              controller: _scrollController,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+                child: CustomScrollView(
+                  controller: _scrollController,
+                  physics: const ClampingScrollPhysics(),
+                  dragStartBehavior: DragStartBehavior.down,
+                  slivers: [
+                    SliverList.builder(
+                      itemCount: logMessages.length,
+                      itemBuilder: (context, index) {
+                        final log = logMessages.elementAt(index);
 
-                final child = Theme(
-                  data: Theme.of(context).copyWith(
-                    textTheme: Theme.of(
-                      context,
-                    ).textTheme.apply(fontFamily: fontFamily),
-                  ),
-                  child: SelectableText.rich(
-                    style: TextStyle(fontFamily: fontFamily, height: 0),
-                    TextSpan(
-                      children: [
-                        // Prefix
-                        TextSpan(
-                          text: '[${log.prefix}]',
-                          style: TextStyle(
-                            color: log.color.consoleColorToColor(context),
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
+                        final child = SelectableText.rich(
+                          style: const TextStyle(height: 0),
+                          TextSpan(
+                            children: [
+                              // Prefix
+                              TextSpan(
+                                text: '[${log.prefix}]',
+                                style: TextStyle(
+                                  color: log.color.consoleColorToColor(context),
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
 
-                        // Timestamp
-                        TextSpan(
-                          text: '[${log.timestamp}] ',
-                          style: TextStyle(
-                            color: LoggerColors.of(context).brilliantAzure,
-                            fontWeight: FontWeight.w500,
-                            fontSize: 11,
-                            letterSpacing: -0.5,
-                          ),
-                        ),
+                              // Timestamp
+                              TextSpan(
+                                text: '[${log.timestamp}] ',
+                                style: TextStyle(
+                                  color: LoggerColors.of(
+                                    context,
+                                  ).brilliantAzure,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 11,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
 
-                        // Message
-                        TextSpan(
-                          text: log.message,
-                          style: TextStyle(
-                            color: log.color.consoleColorToColor(context),
-                            fontWeight: FontWeight.w400,
-                            fontSize: 11,
-                            letterSpacing: -0.5,
+                              // Message
+                              TextSpan(
+                                text: log.message,
+                                style: TextStyle(
+                                  color: log.color.consoleColorToColor(context),
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: 11,
+                                  letterSpacing: -0.5,
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                        );
+
+                        if (index % 2 == 0) {
+                          return ColoredBox(
+                            color: LoggerColors.of(context).gray.withAlpha(30),
+                            child: child,
+                          );
+                        } else {
+                          return child;
+                        }
+                      },
                     ),
-                  ),
-                );
 
-                if (index % 2 == 0) {
-                  return ColoredBox(
-                    color: LoggerColors.of(context).gray.withAlpha(30),
-                    child: child,
-                  );
-                } else {
-                  return child;
-                }
-              },
+                    const SliverToBoxAdapter(child: SizedBox(height: 128)),
+                  ],
+                ),
+              ),
             ),
-
-            const SliverToBoxAdapter(child: SizedBox(height: 128)),
-          ],
-        ),
-      ),
+          ),
     ),
     floatingActionButton: ValueListenableBuilder(
       valueListenable: _isSendingLogToServer,

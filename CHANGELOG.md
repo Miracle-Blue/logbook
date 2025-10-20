@@ -1,3 +1,9 @@
+## 0.2.0
+
+* Added theme mode support - allows customizing the logbook theme (light, dark, or system)
+* Added automatic scroll to bottom when new logs arrive (unless user has scrolled up)
+* Added copyWith method for LogbookConfig class
+
 ## 0.1.5
 
 * Pub score fixed (The local variable '_timePad' starts with an underscore)

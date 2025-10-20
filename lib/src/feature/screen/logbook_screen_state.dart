@@ -31,6 +31,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Is search enabled
   bool _isSearchEnabled = false;
 
+  /// Is user scrolled
+  bool _isUserScrolled = false;
+
   /// Search results
   final List<LogMessage> _searchResults = [];
 
@@ -102,6 +105,28 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     setState(() {});
   }
 
+  /// Method that handles scroll notifications to track user scroll position
+  bool _onScrolled(ScrollUpdateNotification notification) {
+    if (notification.metrics.pixels <
+        notification.metrics.maxScrollExtent - 100) {
+      _isUserScrolled = true;
+    } else if (notification.metrics.pixels ==
+        notification.metrics.maxScrollExtent) {
+      _isUserScrolled = false;
+    }
+    return true;
+  }
+
+  void _scrollToBottomListener() {
+    if (_scrollController.hasClients && !_isUserScrolled) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
+
   /// Method that handles the save and send to server tap
   Future<void> onSaveAndSendToServerTap() async {
     if (!sendingLogToServerEnabled) {
@@ -154,21 +179,23 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();
     _isSendingLogToServer = ValueNotifier(false);
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback(
-      (_) => _scrollController.animateTo(
-        _scrollController.position.maxScrollExtent,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      ),
-    );
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    LogBuffer.instance.addListener(_scrollToBottomListener);
   }
 
   @override
   void dispose() {
+    LogBuffer.instance.removeListener(_scrollToBottomListener);
+
     _searchFocusNode.dispose();
     _scrollController.dispose();
     _isSendingLogToServer.dispose();
+
     super.dispose();
   }
 
