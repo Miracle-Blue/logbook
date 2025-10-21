@@ -1,6 +1,6 @@
 name: logbook
 description: "Logbook is a library for logging and tracking events in a Flutter application."
-version: 0.2.2
+version: 0.3.0
 
 homepage: https://github.com/Miracle-Blue/logbook
 repository: https://github.com/Miracle-Blue/logbook
