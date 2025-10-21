@@ -1,19 +1,27 @@
 import 'dart:async' show scheduleMicrotask;
 import 'dart:collection' show Queue;
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart' show ChangeNotifier;
 
+import '../../../logbook.dart';
 import '../../common/model/log_message.dart';
+import '../../common/util/log_message_to_csv.dart';
+import '../data/logbook_repository.dart';
 
 /// {@template log_buffer}
 /// Log buffer.
 /// {@endtemplate}
 final class LogBuffer with ChangeNotifier {
   /// {@macro log_buffer}
-  LogBuffer._internal();
+  LogBuffer._internal() {
+    _logbookRepository = const LogbookRepositoryImpl();
+  }
 
   /// {@macro log_buffer_instance}
   static final LogBuffer _instance = LogBuffer._internal();
+
+  late final ILogbookRepository _logbookRepository;
 
   /// Instance
   static LogBuffer get instance => _instance;
@@ -65,6 +73,28 @@ final class LogBuffer with ChangeNotifier {
       _notificationScheduled = false;
       notifyListeners();
     });
+  }
+
+  Future<void> sendLogsToServer({
+    required final Uri? uri,
+    required final String debugFileName,
+    required final Map<String, String>? multipartFileFields,
+  }) async {
+    if (uri == null) return;
+
+    try {
+      final file = await toCSVString();
+      final bytes = utf8.encode(file);
+
+      await _logbookRepository.sendLog(
+        uri,
+        bytes,
+        fileName: debugFileName,
+        fields: multipartFileFields,
+      );
+    } on Object catch (e, s) {
+      l.s('Error on save and send to server: $e', s);
+    }
   }
 
   @override

@@ -97,6 +97,7 @@ class _LogbookDemoState extends State<LogbookDemo> {
   }
 
   void _logCustomType() {
+    Logbook.sendLogsToServer(context);
     l.log('This is a custom log type message', 'CUSTOM');
     l.c('Configuration: Using custom log types for special events');
   }

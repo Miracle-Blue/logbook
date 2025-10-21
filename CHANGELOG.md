@@ -1,4 +1,5 @@
-## 0.2.2
+## 0.3.0
+* Added sendLogsToServer method to Logbook class
 * Pub score fixed
 
 ## 0.2.1

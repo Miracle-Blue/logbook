@@ -16,9 +16,6 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Is sending log to server
   late final ValueNotifier<bool> _isSendingLogToServer;
 
-  /// Logbook repository
-  late final ILogbookRepository _logbookRepository;
-
   /// Sending log to server enabled
   bool get sendingLogToServerEnabled => widget.config.uri != null;
 
@@ -151,20 +148,11 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     HapticFeedback.selectionClick().ignore();
 
-    try {
-      final file = await LogBuffer.instance.toCSVString();
-
-      final bytes = utf8.encode(file);
-
-      await _logbookRepository.sendLog(
-        widget.config.uri!,
-        bytes,
-        fileName: widget.config.debugFileName,
-        fields: widget.config.multipartFileFields,
-      );
-    } on Object catch (e, s) {
-      l.s('Error on save and send to server: $e', s);
-    }
+    await LogBuffer.instance.sendLogsToServer(
+      uri: widget.config.uri,
+      debugFileName: widget.config.debugFileName,
+      multipartFileFields: widget.config.multipartFileFields,
+    );
 
     _isSendingLogToServer.value = false;
   }
@@ -173,8 +161,6 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   @override
   void initState() {
     super.initState();
-
-    _logbookRepository = const LogbookRepositoryImpl();
 
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();

@@ -14,9 +14,6 @@ abstract class LogbookState extends State<Logbook>
   /// Handle width
   final double handleWidth = 16;
 
-  /// Config
-  LogbookConfig get config => widget.config ?? const LogbookConfig();
-
   /// Method that handles the horizontal drag update
   void onHorizontalDragUpdate(DragUpdateDetails details, double width) {
     if (dismissed.value) return;

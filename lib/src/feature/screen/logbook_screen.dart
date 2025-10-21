@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -8,9 +7,7 @@ import 'package:flutter/services.dart';
 import '../../../logbook.dart';
 import '../../common/model/console_color.dart';
 import '../../common/model/log_message.dart';
-import '../../common/util/log_message_to_csv.dart';
 import '../../common/util/logger_colors.dart';
-import '../data/logbook_repository.dart';
 import '../logbook/log_buffer.dart';
 
 part 'logbook_screen_state.dart';

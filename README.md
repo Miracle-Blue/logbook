@@ -148,6 +148,14 @@ void main() {
 }
 ```
 
+### Send Logs to Server
+
+Send logs to your server for remote debugging in CSV format (uses configs from Logbook widget):
+
+```dart
+Logbook.sendLogsToServer(context);
+```
+
 ---
 
 ## ⚙️ Configuration
@@ -171,13 +179,13 @@ Logbook(
 
 #### Parameters
 
-| Parameter | Type | Default | Description |
-|-----------|------|---------|-------------|
-| `enabled` | `bool` | `kDebugMode` | Enable/disable the logbook overlay |
-| `debugFileName` | `String` | `'debug_info.csv'` | Filename for CSV exports to server |
-| `uri` | `String?` | `null` | Server URI for remote logging |
-| `multipartFileFields` | `String?` | `null` | Multipart file fields for remote logging |
-| `fontFamily` | `String` | `'Monospace'` | Font family for the logbook |
+| Parameter             | Type      | Default            | Description                              |
+| --------------------- | --------- | ------------------ | ---------------------------------------- |
+| `enabled`             | `bool`    | `kDebugMode`       | Enable/disable the logbook overlay       |
+| `debugFileName`       | `String`  | `'debug_info.csv'` | Filename for CSV exports to server       |
+| `uri`                 | `String?` | `null`             | Server URI for remote logging            |
+| `multipartFileFields` | `String?` | `null`             | Multipart file fields for remote logging |
+| `fontFamily`          | `String`  | `'Monospace'`      | Font family for the logbook              |
 
 ---
 
@@ -191,6 +199,7 @@ flutter run
 ```
 
 The example app demonstrates:
+
 - All log types
 - Async operations logging
 - Error handling
