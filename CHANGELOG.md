@@ -1,3 +1,6 @@
+## 0.2.1
+* Package logo added
+
 ## 0.2.0
 
 * Added theme mode support - allows customizing the logbook theme (light, dark, or system)
