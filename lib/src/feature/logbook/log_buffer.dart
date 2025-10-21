@@ -14,14 +14,12 @@ import '../data/logbook_repository.dart';
 /// {@endtemplate}
 final class LogBuffer with ChangeNotifier {
   /// {@macro log_buffer}
-  LogBuffer._internal() {
-    _logbookRepository = const LogbookRepositoryImpl();
-  }
+  LogBuffer._internal();
 
   /// {@macro log_buffer_instance}
   static final LogBuffer _instance = LogBuffer._internal();
 
-  late final ILogbookRepository _logbookRepository;
+  final ILogbookRepository _logbookRepository = const LogbookRepositoryImpl();
 
   /// Instance
   static LogBuffer get instance => _instance;
