@@ -8,6 +8,7 @@ import '../../../logbook.dart';
 import '../../common/model/console_color.dart';
 import '../../common/model/log_message.dart';
 import '../../common/util/logger_colors.dart';
+import '../../common/util/throttling.dart';
 import '../logbook/log_buffer.dart';
 
 part 'logbook_screen_state.dart';

@@ -4,6 +4,9 @@ part of 'logbook_screen.dart';
 /// Log viewer screen state.
 /// {@endtemplate}
 abstract class LogViewerScreenState extends State<LogViewerScreen> {
+  /// Throttling for scroll to bottom
+  late final Throttling<void> _scrollToBottomThrottling;
+
   /// Font family
   String get fontFamily => widget.config.fontFamily;
 
@@ -114,7 +117,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     return true;
   }
 
-  void _scrollToBottomListener() {
+  void _scrollToBottomListener() => _scrollToBottomThrottling.throttle(() {
     if (_scrollController.hasClients && !_isUserScrolled) {
       _scrollController.animateTo(
         _scrollController.position.maxScrollExtent,
@@ -122,7 +125,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
         curve: Curves.easeInOut,
       );
     }
-  }
+  });
 
   /// Method that handles the save and send to server tap
   Future<void> onSaveAndSendToServerTap() async {
@@ -162,6 +165,10 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   void initState() {
     super.initState();
 
+    _scrollToBottomThrottling = Throttling<void>(
+      duration: const Duration(milliseconds: 500),
+    );
+
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();
     _isSendingLogToServer = ValueNotifier(false);
@@ -176,6 +183,8 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
   @override
   void dispose() {
+    _scrollToBottomThrottling.close();
+
     LogBuffer.instance.removeListener(_scrollToBottomListener);
 
     _searchFocusNode.dispose();

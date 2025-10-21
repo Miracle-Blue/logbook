@@ -1,5 +1,6 @@
 ## 0.3.0
 * Added sendLogsToServer method to Logbook class
+* Added throttling for scroll to bottom
 * Pub score fixed
 
 ## 0.2.1
