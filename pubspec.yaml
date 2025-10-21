@@ -14,7 +14,7 @@ topics:
   - monitoring
 
 screenshots:
-  - description: "logo"
+  - description: "Logbook logo"
     path: screenshots/logo.png
 
 platforms:
