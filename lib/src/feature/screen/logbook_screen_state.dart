@@ -107,6 +107,10 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
   /// Method that handles scroll notifications to track user scroll position
   bool _onScrolled(ScrollUpdateNotification notification) {
+    if (notification.dragDetails == null) {
+      return true;
+    }
+
     if (notification.metrics.pixels <
         notification.metrics.maxScrollExtent - 100) {
       _isUserScrolled = true;
