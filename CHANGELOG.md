@@ -1,3 +1,6 @@
+## 0.2.2
+* Pub score fixed
+
 ## 0.2.1
 * Package logo added
 
