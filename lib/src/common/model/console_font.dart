@@ -2,9 +2,16 @@
 /// Available console fonts
 /// {@endtemplate}
 enum ConsoleFont {
+  /// Bold font
   bold,
+
+  /// Underline font
   underline,
+
+  /// Reversed font
   //reversed,
+
+  /// Default font
   byDefault;
 
   /// {@macro console_font}

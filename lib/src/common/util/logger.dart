@@ -148,7 +148,10 @@ String _formatStyled(
     ..writeEsc(Constants.reset);
 
   return buffer.completeMessage(
-    '[${DateTime.now().timeFormat(withMilliseconds: withMilliseconds)}]$message',
+    '['
+    '${DateTime.now().timeFormat(withMilliseconds: withMilliseconds)}'
+    ']'
+    '$message',
   );
 }
 

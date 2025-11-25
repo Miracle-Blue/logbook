@@ -24,7 +24,9 @@ class Logbook extends StatefulWidget {
   /// {@macro logbook_config}
   final LogbookConfig config;
 
-  /// {@macro child}
+  /// The child widget to be displayed.
+  ///
+  /// Logbook will be displayed on top of this widget as an overlay.
   final Widget child;
 
   /// State of the logbook widget.
@@ -35,6 +37,7 @@ class Logbook extends StatefulWidget {
         'a $LogbookState of the exact type out_of_scope',
       ));
 
+  /// Sends the logs to the server.
   static Future<void> sendLogsToServer(BuildContext context) async {
     final config = stateOf(context).widget.config;
 

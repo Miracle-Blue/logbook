@@ -8,10 +8,12 @@ import '../../common/util/logger.dart';
 /// {@template i_logbook_repository}
 /// Logbook repository interface.
 /// {@endtemplate}
+// ignore: one_member_abstracts
 abstract interface class ILogbookRepository {
   /// {@macro i_logbook_repository}
   const ILogbookRepository();
 
+  /// Sends a log to the server.
   Future<void> sendLog(
     Uri uri,
     Uint8List bytes, {

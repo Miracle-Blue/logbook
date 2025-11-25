@@ -5,6 +5,9 @@ part of 'logbook.dart';
 /// {@endtemplate}
 abstract class LogbookState extends State<Logbook>
     with SingleTickerProviderStateMixin {
+  /// {@macro logbook_state}
+  LogbookState();
+
   /// Animation controller
   late final AnimationController _controller;
 

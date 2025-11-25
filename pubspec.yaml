@@ -16,6 +16,14 @@ topics:
 screenshots:
   - description: "Logbook logo"
     path: screenshots/logo.png
+  - description: "Logbook overview showing log messages with different levels"
+    path: screenshots/screenshot_1.png
+  - description: "Logbook filter functionality"
+    path: screenshots/screenshot_2.png
+  - description: "Logbook filter options"
+    path: screenshots/screenshot_3.png
+  - description: "Logbook search feature"
+    path: screenshots/screenshot_4.png
 
 platforms:
   android:

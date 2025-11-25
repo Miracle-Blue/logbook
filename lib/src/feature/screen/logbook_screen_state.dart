@@ -138,7 +138,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
           const SnackBar(
             duration: Duration(seconds: 8),
             content: Text(
-              'Sending log to server is not enabled please set server uri (optional: multipart file fields) in logbook config otherwise read logbook documentation for more information',
+              'Sending log to server is not enabled please set server uri '
+              '(optional: multipart file fields) in logbook config otherwise '
+              'read logbook documentation for more information',
             ),
           ),
         );

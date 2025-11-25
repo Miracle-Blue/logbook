@@ -6,14 +6,31 @@ import '../util/logger_colors.dart';
 /// Available console colors
 /// {@endtemplate}
 enum ConsoleColor {
+  /// Black color
   black,
+
+  /// Red color
   red,
+
+  /// Green color
   green,
+
+  /// Yellow color
   yellow,
+
+  /// Blue color
   blue,
+
+  /// Magenta color
   magenta,
+
+  /// Cyan color
   cyan,
+
+  /// White color
   white,
+
+  /// Default color
   byDefault;
 
   /// {@macro console_color}

@@ -73,6 +73,7 @@ final class LogBuffer with ChangeNotifier {
     });
   }
 
+  /// Sends the logs to the server.
   Future<void> sendLogsToServer({
     required final Uri? uri,
     required final String debugFileName,

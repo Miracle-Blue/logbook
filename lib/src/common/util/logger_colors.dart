@@ -22,6 +22,7 @@ final class LoggerColors extends ThemeExtension<LoggerColors> {
     required this.gray,
   });
 
+  /// Gets the logger colors from the theme.
   factory LoggerColors.of(BuildContext context) {
     try {
       final theme = Theme.of(context);
@@ -36,17 +37,40 @@ final class LoggerColors extends ThemeExtension<LoggerColors> {
     }
   }
 
+  /// The background color of the logger.
   final Color loggerBackground;
+
+  /// The white color of the console.
   final Color consoleWhite;
+
+  /// The black color of the console.
   final Color consoleBlack;
+
+  /// The yellow color of the console.
   final Color consoleYellow;
+
+  /// The red color of the console.
   final Color consoleRed;
+
+  /// The green color of the console.
   final Color consoleGreen;
+
+  /// The magenta color of the console.
   final Color consoleMagenta;
+
+  /// The blue color of the console.
   final Color consoleBlue;
+
+  /// The cyan color of the console.
   final Color consoleCyan;
+
+  /// The default color of the console.
   final Color consoleDefault;
+
+  /// The brilliant azure color.
   final Color brilliantAzure;
+
+  /// The gray color.
   final Color gray;
 
   /// The default light theme colors.
