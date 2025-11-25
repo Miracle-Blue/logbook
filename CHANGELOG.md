@@ -1,9 +1,15 @@
+## 0.3.1
+
+* Pub score fixed
+
 ## 0.3.0
+
 * Added sendLogsToServer method to Logbook class
 * Added throttling for scroll to bottom
 * Pub score fixed
 
 ## 0.2.1
+
 * Package logo added
 
 ## 0.2.0
