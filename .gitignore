@@ -31,3 +31,6 @@ migrate_working_dir/
 /coverage/
 
 config/
+
+# Pana reports
+.pana_reports/
