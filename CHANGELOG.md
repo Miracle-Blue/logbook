@@ -1,3 +1,7 @@
+## 0.3.3
+
+* Log view changed
+
 ## 0.3.2
 
 * Pub score fixed

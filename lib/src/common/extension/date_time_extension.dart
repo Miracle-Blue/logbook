@@ -11,12 +11,12 @@ extension DateTimeX on DateTime? {
     String timePad(int time) => time.toString().padLeft(2, '0');
 
     final withMillisecondsString = withMilliseconds
-        ? timePad(time.millisecond)
+        ? ':${timePad(time.millisecond)}'
         : '';
 
-    return '${timePad(time.hour)}:'
-        '${timePad(time.minute)}:'
-        '${timePad(time.second)}:'
+    return '${timePad(time.hour)}'
+        ':${timePad(time.minute)}'
+        ':${timePad(time.second)}'
         '$withMillisecondsString';
   }
 }
