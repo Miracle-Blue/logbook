@@ -25,14 +25,22 @@ final class LogBuffer with ChangeNotifier {
   static LogBuffer get instance => _instance;
 
   /// Buffer limit
-  static const int bufferLimit =
-      65536; // 64kb -> 2^16 -> 1byte*1024=1kb*64=64kb * 200 = 12800kb = 12.8MB
+  // 64kb -> 2^16
+  // -> 1byte * 1024 = 1kb * 64 -> 64kb * 200(~log_messages_length)
+  // -> 12800kb -> 12.8MB
+  static const int bufferLimit = 65536;
 
   /// Queue
   final Queue<LogMessage> _queue = Queue<LogMessage>();
 
   /// Notification scheduled
   bool _notificationScheduled = false;
+
+  /// Total logs count
+  int _totalLogsCount = 0;
+
+  /// This is the total logs count in the buffer
+  int get totalLogsCount => _totalLogsCount;
 
   /// Get the logs
   Iterable<LogMessage> get logs => _queue;
@@ -47,6 +55,7 @@ final class LogBuffer with ChangeNotifier {
   void add(LogMessage log) {
     if (_queue.length >= bufferLimit) _queue.removeFirst();
     _queue.add(log);
+    _totalLogsCount = (_totalLogsCount + 1).clamp(0, bufferLimit);
     _scheduleNotification();
   }
 
@@ -60,7 +69,15 @@ final class LogBuffer with ChangeNotifier {
       }
     }
     _queue.addAll(list);
+    _totalLogsCount = (_totalLogsCount + list.length).clamp(0, bufferLimit);
     _scheduleNotification();
+  }
+
+  /// Returns logs added after [sinceCount] total additions.
+  Iterable<LogMessage> logsSince(int sinceCount) {
+    final available = _queue.length;
+    final newCount = (_totalLogsCount - sinceCount).clamp(0, available);
+    return _queue.skip(available - newCount);
   }
 
   /// Schedule a notification to be sent after the current frame

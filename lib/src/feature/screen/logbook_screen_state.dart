@@ -7,6 +7,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Throttling for scroll to bottom
   late final Throttling<void> _scrollToBottomThrottling;
 
+  /// Throttling for logs changed
+  late final Throttling<void> _logsChangedThrottling;
+
   /// Font family
   String get fontFamily => widget.config.fontFamily;
 
@@ -34,13 +37,18 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Is user scrolled
   bool _isUserScrolled = false;
 
+  /// Consumed logs count
+  int _consumedLogsCount = 0;
+
+  /// Log messages
+  late final ValueNotifier<List<LogMessage>> activeLogMessages;
+
   /// Search results
   final List<LogMessage> _searchResults = [];
 
   /// Log messages
-  List<LogMessage> get logMessages => _searchResults.isEmpty
-      ? LogBuffer.instance.logs.toList()
-      : _searchResults;
+  List<LogMessage> get logMessages =>
+      _searchResults.isEmpty ? activeLogMessages.value : _searchResults;
 
   /// Filter items
   List<String> get filterItems {
@@ -53,6 +61,18 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       ..sort()
       ..insert(0, _allFilter);
   }
+
+  /// Method that handles the logs changed listener
+  void _onLogsChangedListener() => _logsChangedThrottling.throttle(() {
+    final newLogs = LogBuffer.instance
+        .logsSince(_consumedLogsCount)
+        .toList(growable: false);
+    _consumedLogsCount = LogBuffer.instance.totalLogsCount;
+
+    if (newLogs.isEmpty) return;
+
+    activeLogMessages.value = [...activeLogMessages.value, ...newLogs];
+  });
 
   /// Method that handles the search tap
   void _onSearchTap() {
@@ -117,6 +137,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     return true;
   }
 
+  /// Method that handles the scroll to bottom listener
   void _scrollToBottomListener() => _scrollToBottomThrottling.throttle(() {
     if (_scrollController.hasClients && !_isUserScrolled) {
       _scrollController.animateTo(
@@ -162,6 +183,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     _isSendingLogToServer.value = false;
   }
 
+  /// Method that clears the active logs
+  void _onClearLogsTap() => activeLogMessages.value = [];
+
   /* #region Lifecycle */
   @override
   void initState() {
@@ -171,27 +195,39 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       duration: const Duration(milliseconds: 500),
     );
 
+    _logsChangedThrottling = Throttling<void>(
+      duration: const Duration(milliseconds: 300),
+    );
+
     _scrollController = ScrollController();
     _searchFocusNode = FocusNode();
     _isSendingLogToServer = ValueNotifier(false);
+
+    activeLogMessages = ValueNotifier(<LogMessage>[]);
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
 
-    LogBuffer.instance.addListener(_scrollToBottomListener);
+    LogBuffer.instance
+      ..addListener(_scrollToBottomListener)
+      ..addListener(_onLogsChangedListener);
   }
 
   @override
   void dispose() {
-    _scrollToBottomThrottling.close();
+    LogBuffer.instance
+      ..removeListener(_onLogsChangedListener)
+      ..removeListener(_scrollToBottomListener);
 
-    LogBuffer.instance.removeListener(_scrollToBottomListener);
-
+    _isSendingLogToServer.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
-    _isSendingLogToServer.dispose();
+
+    _logsChangedThrottling.close();
+
+    _scrollToBottomThrottling.close();
 
     super.dispose();
   }

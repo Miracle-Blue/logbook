@@ -55,144 +55,150 @@ class Logbook extends StatefulWidget {
 /// State for widget [LogbookState].
 class _LogbookState extends LogbookState {
   @override
-  Widget build(BuildContext context) {
-    if (widget.config.enabled == false) {
-      return widget.child;
-    }
+  Widget build(BuildContext context) => !widget.config.enabled
+      ? widget.child
+      : LayoutBuilder(
+          builder: (context, constraints) {
+            final width = math.min<double>(
+              400,
+              constraints.biggest.width * 0.97,
+            );
 
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final width = math.min<double>(400, constraints.biggest.width * 0.97);
+            return GestureDetector(
+              onHorizontalDragUpdate: dismissed.value
+                  ? null
+                  : (details) => onHorizontalDragUpdate(details, width),
+              onHorizontalDragEnd: dismissed.value ? null : onHorizontalDragEnd,
+              child: Stack(
+                children: <Widget>[
+                  widget.child,
 
-        return GestureDetector(
-          onHorizontalDragUpdate: dismissed.value
-              ? null
-              : (details) => onHorizontalDragUpdate(details, width),
-          onHorizontalDragEnd: dismissed.value ? null : onHorizontalDragEnd,
-          child: Stack(
-            children: <Widget>[
-              widget.child,
-
-              // Semi-transparent barrier behind the overlay when open
-              if (!dismissed.value)
-                AnimatedModalBarrier(
-                  color: _controller.drive(
-                    ColorTween(
-                      begin: Colors.transparent,
-                      end: Colors.black.withAlpha(127),
-                    ),
-                  ),
-                  dismissible: true,
-                  semanticsLabel: 'Dismiss',
-                  onDismiss: _controller.reverse,
-                ),
-
-              PositionedTransition(
-                rect: _controller.drive(
-                  RelativeRectTween(
-                    begin: RelativeRect.fromLTRB(
-                      handleWidth - width,
-                      0,
-                      constraints.biggest.width - handleWidth,
-                      0,
-                    ),
-                    end: RelativeRect.fromLTRB(
-                      0,
-                      0,
-                      constraints.biggest.width - width,
-                      0,
-                    ),
-                  ),
-                ),
-                child: Theme(
-                  data:
-                      switch (ThemeMode.dark) {
-                        ThemeMode.light => ThemeData.light(),
-                        ThemeMode.dark => ThemeData.dark(),
-                        _ => Theme.of(context),
-                      }.copyWith(
-                        textTheme: Theme.of(
-                          context,
-                        ).textTheme.apply(fontFamily: widget.config.fontFamily),
-                      ),
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Visibility(
-                          visible: !dismissed.value,
-                          maintainState: true,
-                          maintainAnimation: false,
-                          maintainSize: false,
-                          maintainInteractivity: false,
-                          maintainSemantics: false,
-                          child: Material(
-                            elevation: 0,
-                            child: DefaultSelectionStyle(
-                              child: ScaffoldMessenger(
-                                child: HeroControllerScope.none(
-                                  child: Navigator(
-                                    pages: [
-                                      MaterialPage(
-                                        child: LogViewerScreen(
-                                          config: widget.config,
-                                        ),
-                                      ),
-                                    ],
-                                    onDidRemovePage: (page) =>
-                                        log('ON DID REMOVE PAGE'),
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                  // Semi-transparent barrier behind the overlay when open
+                  if (!dismissed.value)
+                    AnimatedModalBarrier(
+                      color: _controller.drive(
+                        ColorTween(
+                          begin: Colors.transparent,
+                          end: Colors.black.withAlpha(127),
                         ),
                       ),
+                      dismissible: true,
+                      semanticsLabel: 'Dismiss',
+                      onDismiss: _controller.reverse,
+                    ),
 
-                      Stack(
-                        children: [
-                          Align(
-                            child: SizedBox(
-                              width: handleWidth,
-                              height: 64,
-                              child: Material(
-                                color: LoggerColors.of(context).consoleWhite,
-                                borderRadius: const BorderRadius.horizontal(
-                                  right: Radius.circular(16),
-                                ),
-                                elevation: 0,
-                                child: InkWell(
-                                  onTap: _controller.toggle,
-                                  borderRadius: const BorderRadius.horizontal(
-                                    right: Radius.circular(16),
-                                  ),
-                                  child: Center(
-                                    child: RotationTransition(
-                                      turns: _controller.drive(
-                                        Tween<double>(begin: 0, end: 0.5),
-                                      ),
-                                      child: Icon(
-                                        Icons.chevron_right,
-                                        size: 18,
-                                        color: LoggerColors.of(
-                                          context,
-                                        ).loggerBackground,
+                  PositionedTransition(
+                    rect: _controller.drive(
+                      RelativeRectTween(
+                        begin: RelativeRect.fromLTRB(
+                          handleWidth - width,
+                          0,
+                          constraints.biggest.width - handleWidth,
+                          0,
+                        ),
+                        end: RelativeRect.fromLTRB(
+                          0,
+                          0,
+                          constraints.biggest.width - width,
+                          0,
+                        ),
+                      ),
+                    ),
+                    child: Theme(
+                      data:
+                          switch (widget.config.themeMode) {
+                            ThemeMode.light => ThemeData.light(),
+                            ThemeMode.dark => ThemeData.dark(),
+                            _ => Theme.of(context),
+                          }.copyWith(
+                            textTheme: Theme.of(context).textTheme.apply(
+                              fontFamily: widget.config.fontFamily,
+                            ),
+                          ),
+                      child: SizedBox(
+                        width: width,
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Visibility(
+                                visible: !dismissed.value,
+                                maintainState: true,
+                                maintainAnimation: false,
+                                maintainSize: false,
+                                maintainInteractivity: false,
+                                maintainSemantics: false,
+                                child: Material(
+                                  elevation: 0,
+                                  child: DefaultSelectionStyle(
+                                    child: ScaffoldMessenger(
+                                      child: HeroControllerScope.none(
+                                        child: Navigator(
+                                          pages: <Page<void>>[
+                                            MaterialPage<void>(
+                                              child: LogViewerScreen(
+                                                config: widget.config,
+                                              ),
+                                            ),
+                                          ],
+                                          onDidRemovePage: (page) =>
+                                              log('ON DID REMOVE PAGE'),
+                                        ),
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+
+                            Stack(
+                              children: [
+                                Align(
+                                  child: SizedBox(
+                                    width: handleWidth,
+                                    height: 64,
+                                    child: Material(
+                                      color: LoggerColors.of(
+                                        context,
+                                      ).consoleWhite,
+                                      borderRadius:
+                                          const BorderRadius.horizontal(
+                                            right: Radius.circular(16),
+                                          ),
+                                      elevation: 0,
+                                      child: InkWell(
+                                        onTap: _controller.toggle,
+                                        borderRadius:
+                                            const BorderRadius.horizontal(
+                                              right: Radius.circular(16),
+                                            ),
+                                        child: Center(
+                                          child: RotationTransition(
+                                            turns: _controller.drive(
+                                              Tween<double>(begin: 0, end: 0.5),
+                                            ),
+                                            child: Icon(
+                                              Icons.chevron_right,
+                                              size: 18,
+                                              color: LoggerColors.of(
+                                                context,
+                                              ).loggerBackground,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
+                ],
               ),
-            ],
-          ),
+            );
+          },
         );
-      },
-    );
-  }
 }

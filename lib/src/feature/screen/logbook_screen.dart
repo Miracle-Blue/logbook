@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -99,10 +98,18 @@ class _LogViewerScreenState extends LogViewerScreenState {
             color: LoggerColors.of(context).consoleWhite,
           ),
         ),
+
+        IconButton(
+          onPressed: _onClearLogsTap,
+          icon: Icon(
+            Icons.delete_outline_outlined,
+            color: LoggerColors.of(context).consoleWhite,
+          ),
+        ),
       ],
     ),
     body: ListenableBuilder(
-      listenable: LogBuffer.instance,
+      listenable: activeLogMessages,
       builder: (context, child) =>
           NotificationListener<ScrollUpdateNotification>(
             onNotification: _onScrolled,
@@ -113,7 +120,6 @@ class _LogViewerScreenState extends LogViewerScreenState {
                 child: CustomScrollView(
                   controller: _scrollController,
                   physics: const ClampingScrollPhysics(),
-                  dragStartBehavior: DragStartBehavior.down,
                   slivers: [
                     SliverList.builder(
                       itemCount: logMessages.length,
