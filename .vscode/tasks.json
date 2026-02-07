@@ -1,0 +1,15 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Pana Report",
+      "type": "shell",
+      "command": ["(pana --json > pana_report.json)"],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      },
+      "problemMatcher": []
+    }
+  ]
+}
