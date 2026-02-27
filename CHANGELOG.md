@@ -1,3 +1,8 @@
+## 0.5.0
+
+- Multi-select log filter with checkboxes and "All" toggle (replaces single-select)
+- Scroll-to-bottom floating action button
+
 ## 0.4.0
 
 - Added clear logs feature
