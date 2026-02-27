@@ -25,11 +25,11 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Sending log to server enabled
   bool get sendingLogToServerEnabled => widget.config.uri != null;
 
-  /// All filter
-  static const _allFilter = 'All';
-
   /// Selected filter
-  String selectedFilter = 'All';
+  List<String> selectedFilter = [];
+
+  /// Whether the user has explicitly interacted with the filter
+  bool _filterInteracted = false;
 
   /// Is search enabled
   bool _isSearchEnabled = false;
@@ -43,23 +43,36 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Log messages
   late final ValueNotifier<List<LogMessage>> activeLogMessages;
 
-  /// Search results
-  final List<LogMessage> _searchResults = [];
+  /// Search query
+  String _searchQuery = '';
 
-  /// Log messages
-  List<LogMessage> get logMessages =>
-      _searchResults.isEmpty ? activeLogMessages.value : _searchResults;
+  /// Whether all available prefixes are selected
+  bool get _isAllSelected {
+    final allPrefixes = LogBuffer.instance.logsPrefix;
+    return allPrefixes.isNotEmpty && allPrefixes.every(selectedFilter.contains);
+  }
 
-  /// Filter items
-  List<String> get filterItems {
-    final items = LogBuffer.instance.logs
-        .map<String>((log) => log.prefix)
-        .toSet()
+  /// Log messages filtered by prefix and search query
+  List<LogMessage> get logMessages {
+    var messages = activeLogMessages.value;
+
+    messages = messages
+        .where((log) => selectedFilter.contains(log.prefix))
         .toList();
 
-    return items
-      ..sort()
-      ..insert(0, _allFilter);
+    if (_searchQuery.isNotEmpty) {
+      final lower = _searchQuery.toLowerCase();
+      messages = messages
+          .where(
+            (log) =>
+                log.message.toLowerCase().contains(lower) ||
+                log.prefix.toLowerCase().contains(lower) ||
+                log.timestamp.toString().toLowerCase().contains(lower),
+          )
+          .toList();
+    }
+
+    return messages;
   }
 
   /// Method that handles the logs changed listener
@@ -71,55 +84,49 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     if (newLogs.isEmpty) return;
 
+    if (!_filterInteracted) {
+      final newPrefixes = LogBuffer.instance.logsPrefix.where(
+        (p) => !selectedFilter.contains(p),
+      );
+      if (newPrefixes.isNotEmpty) selectedFilter.addAll(newPrefixes);
+    }
+
     activeLogMessages.value = [...activeLogMessages.value, ...newLogs];
   });
 
   /// Method that handles the search tap
   void _onSearchTap() {
-    setState(() => _isSearchEnabled = !_isSearchEnabled);
+    setState(() {
+      _isSearchEnabled = !_isSearchEnabled;
+      if (!_isSearchEnabled) _searchQuery = '';
+    });
 
     if (_isSearchEnabled) {
       _searchFocusNode.requestFocus();
-      selectedFilter = _allFilter;
+      selectedFilter = LogBuffer.instance.logsPrefix.toList();
     }
   }
 
   /// Method that handles the search changed
-  void _onSearchChanged(String value) {
-    final query = value.trim();
-
-    if (query.isEmpty) {
-      _searchResults.clear();
-    } else {
-      final lower = query.toLowerCase();
-
-      final matches = LogBuffer.instance.logs.where(
-        (log) =>
-            log.message.toLowerCase().contains(lower) ||
-            log.prefix.toLowerCase().contains(lower) ||
-            log.timestamp.toString().toLowerCase().contains(lower),
-      );
-
-      _searchResults
-        ..clear()
-        ..addAll(matches);
-    }
-
-    setState(() {});
-  }
+  void _onSearchChanged(String value) =>
+      setState(() => _searchQuery = value.trim());
 
   /// Method that handles the filter tap
   void _onFilterTap(String value) {
-    selectedFilter = value;
+    _filterInteracted = true;
 
-    if (selectedFilter == _allFilter) {
-      _searchResults.clear();
+    if (value == 'All') {
+      if (_isAllSelected) {
+        selectedFilter.clear();
+      } else {
+        selectedFilter = LogBuffer.instance.logsPrefix.toList();
+      }
     } else {
-      _searchResults
-        ..clear()
-        ..addAll(
-          LogBuffer.instance.logs.where((log) => log.prefix == selectedFilter),
-        );
+      if (selectedFilter.contains(value)) {
+        selectedFilter.remove(value);
+      } else {
+        selectedFilter.add(value);
+      }
     }
 
     setState(() {});

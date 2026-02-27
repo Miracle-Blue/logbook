@@ -58,37 +58,117 @@ class _LogViewerScreenState extends LogViewerScreenState {
           padding: EdgeInsets.zero,
           icon: Icon(
             Icons.filter_list_rounded,
-            color: selectedFilter == LogViewerScreenState._allFilter
-                ? LoggerColors.of(context).consoleWhite
-                : LoggerColors.of(context).brilliantAzure,
+            color: selectedFilter.isNotEmpty
+                ? LoggerColors.of(context).brilliantAzure
+                : LoggerColors.of(context).consoleWhite,
           ),
-          itemBuilder: (context) => filterItems
-              .map<PopupMenuEntry<String>>(
-                (e) => PopupMenuItem(
-                  value: e,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
+          itemBuilder: (context) => [
+            PopupMenuItem(
+              value: 'All',
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Theme(
+                    data: ThemeData(
+                      checkboxTheme: CheckboxThemeData(
+                        checkColor: WidgetStateProperty.all(
+                          LoggerColors.of(context).consoleWhite,
+                        ),
+                        fillColor: WidgetStateProperty.all(
+                          _isAllSelected
+                              ? LoggerColors.of(context).brilliantAzure
+                              : Colors.transparent,
+                        ),
+                        side: BorderSide(
+                          width: 1.5,
+                          color: _isAllSelected
+                              ? LoggerColors.of(context).brilliantAzure
+                              : LoggerColors.of(context).gray,
+                        ),
+                      ),
+                    ),
+                    child: Checkbox(
+                      value: _isAllSelected,
+                      overlayColor: WidgetStateProperty.all(
+                        LoggerColors.of(context).brilliantAzure,
+                      ),
+                      tristate: true,
+                      checkColor: LoggerColors.of(context).consoleWhite,
+                      activeColor: LoggerColors.of(context).brilliantAzure,
+                      onChanged: null,
+                    ),
+                  ),
+                  Expanded(
+                    child: Text(
+                      'All',
+                      style: TextStyle(
+                        color: _isAllSelected
+                            ? LoggerColors.of(context).brilliantAzure
+                            : LoggerColors.of(context).consoleWhite,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            ...LogBuffer.instance.logsPrefix.map<PopupMenuEntry<String>>(
+              (e) => PopupMenuItem(
+                value: e,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Theme(
+                      data: ThemeData(
+                        checkboxTheme: CheckboxThemeData(
+                          checkColor: WidgetStateProperty.all(
+                            LoggerColors.of(context).consoleWhite,
+                          ),
+                          fillColor: WidgetStateProperty.all(
+                            selectedFilter.contains(e)
+                                ? LoggerColors.of(context).brilliantAzure
+                                : Colors.transparent,
+                          ),
+                          side: BorderSide(
+                            width: 1.5,
+                            color: selectedFilter.contains(e)
+                                ? LoggerColors.of(context).brilliantAzure
+                                : LoggerColors.of(context).gray,
+                          ),
+                        ),
+                      ),
+                      child: Checkbox(
+                        value: selectedFilter.contains(e),
+                        overlayColor: WidgetStateProperty.all(
+                          LoggerColors.of(context).brilliantAzure,
+                        ),
+                        tristate: true,
+                        checkColor: LoggerColors.of(context).consoleWhite,
+                        activeColor: LoggerColors.of(context).brilliantAzure,
+                        onChanged: null,
+                      ),
+                    ),
+                    Expanded(
+                      child: Text(
                         e,
                         style: TextStyle(
-                          color: selectedFilter == e
+                          color: selectedFilter.contains(e)
                               ? LoggerColors.of(context).brilliantAzure
                               : LoggerColors.of(context).consoleWhite,
                           fontWeight: FontWeight.w500,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-
-                      if (selectedFilter == e)
-                        Icon(
-                          Icons.check_rounded,
-                          color: LoggerColors.of(context).brilliantAzure,
-                        ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              )
-              .toList(),
+              ),
+            ),
+          ],
         ),
 
         IconButton(

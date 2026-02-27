@@ -45,6 +45,13 @@ final class LogBuffer with ChangeNotifier {
   /// Get the logs
   Iterable<LogMessage> get logs => _queue;
 
+  /// Get the logs prefix
+  Iterable<String> get logsPrefix => _queue.map((log) => log.prefix).toSet();
+
+  /// Search logs by text
+  Iterable<LogMessage> searchLogs(String text) =>
+      _queue.where((log) => log.message.contains(text));
+
   /// Clear the logs
   void clear() {
     _queue.clear();
