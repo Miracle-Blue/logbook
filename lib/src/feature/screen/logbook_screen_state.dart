@@ -25,8 +25,8 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Sending log to server enabled
   bool get sendingLogToServerEnabled => widget.config.uri != null;
 
-  /// Selected filter
-  List<String> selectedFilter = [];
+  /// Selected filter — Set for O(1) lookups
+  Set<String> selectedFilter = {};
 
   /// Whether the user has explicitly interacted with the filter
   bool _filterInteracted = false;
@@ -46,19 +46,26 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Search query
   String _searchQuery = '';
 
+  /// Debounce timer for search input
+  Timer? _searchDebounce;
+
   /// Whether all available prefixes are selected
   bool get _isAllSelected {
     final allPrefixes = LogBuffer.instance.logsPrefix;
     return allPrefixes.isNotEmpty && allPrefixes.every(selectedFilter.contains);
   }
 
-  /// Log messages filtered by prefix and search query
+  /// Log messages filtered by prefix and search query.
+  /// Cache the result in a local variable — do not
+  /// call this getter more than once per frame.
   List<LogMessage> get logMessages {
     var messages = activeLogMessages.value;
 
-    messages = messages
-        .where((log) => selectedFilter.contains(log.prefix))
-        .toList();
+    if (selectedFilter.isNotEmpty) {
+      messages = messages
+          .where((log) => selectedFilter.contains(log.prefix))
+          .toList();
+    }
 
     if (_searchQuery.isNotEmpty) {
       final lower = _searchQuery.toLowerCase();
@@ -91,7 +98,16 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       if (newPrefixes.isNotEmpty) selectedFilter.addAll(newPrefixes);
     }
 
-    activeLogMessages.value = [...activeLogMessages.value, ...newLogs];
+    final current = activeLogMessages.value;
+    final combined = [...current, ...newLogs];
+
+    if (combined.length > LogBuffer.bufferLimit) {
+      activeLogMessages.value = combined.sublist(
+        combined.length - LogBuffer.bufferLimit,
+      );
+    } else {
+      activeLogMessages.value = combined;
+    }
   });
 
   /// Method that handles the search tap
@@ -103,13 +119,18 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     if (_isSearchEnabled) {
       _searchFocusNode.requestFocus();
-      selectedFilter = LogBuffer.instance.logsPrefix.toList();
+      selectedFilter = LogBuffer.instance.logsPrefix.toSet();
     }
   }
 
-  /// Method that handles the search changed
-  void _onSearchChanged(String value) =>
+  /// Handles search input — debounced to avoid
+  /// per-keystroke rebuilds.
+  void _onSearchChanged(String value) {
+    _searchDebounce?.cancel();
+    _searchDebounce = Timer(const Duration(milliseconds: 200), () {
       setState(() => _searchQuery = value.trim());
+    });
+  }
 
   /// Method that handles the filter tap
   void _onFilterTap(String value) {
@@ -119,7 +140,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       if (_isAllSelected) {
         selectedFilter.clear();
       } else {
-        selectedFilter = LogBuffer.instance.logsPrefix.toList();
+        selectedFilter = LogBuffer.instance.logsPrefix.toSet();
       }
     } else {
       if (selectedFilter.contains(value)) {
@@ -154,6 +175,17 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       );
     }
   });
+
+  /// Method that handles the scroll to bottom tap
+  void scrollToBottom() {
+    if (_scrollController.hasClients) {
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
+  }
 
   /// Method that handles the save and send to server tap
   Future<void> onSaveAndSendToServerTap() async {
@@ -201,7 +233,6 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     _scrollToBottomThrottling = Throttling<void>(
       duration: const Duration(milliseconds: 500),
     );
-
     _logsChangedThrottling = Throttling<void>(
       duration: const Duration(milliseconds: 300),
     );
@@ -211,11 +242,6 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
     _isSendingLogToServer = ValueNotifier(false);
 
     activeLogMessages = ValueNotifier(<LogMessage>[]);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
 
     LogBuffer.instance
       ..addListener(_scrollToBottomListener)
@@ -228,12 +254,12 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
       ..removeListener(_onLogsChangedListener)
       ..removeListener(_scrollToBottomListener);
 
+    _searchDebounce?.cancel();
     _isSendingLogToServer.dispose();
     _searchFocusNode.dispose();
     _scrollController.dispose();
 
     _logsChangedThrottling.close();
-
     _scrollToBottomThrottling.close();
 
     super.dispose();

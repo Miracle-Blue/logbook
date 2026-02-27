@@ -29,135 +29,75 @@ class LogViewerScreen extends StatefulWidget {
 /// State for [LogViewerScreen].
 class _LogViewerScreenState extends LogViewerScreenState {
   @override
-  Widget build(BuildContext context) => Scaffold(
-    backgroundColor: LoggerColors.of(context).loggerBackground,
-    appBar: AppBar(
-      centerTitle: false,
-      backgroundColor: LoggerColors.of(context).loggerBackground,
-      title: _isSearchEnabled
-          ? TextField(
-              focusNode: _searchFocusNode,
-              onChanged: _onSearchChanged,
-              decoration: const InputDecoration(border: InputBorder.none),
-              style: TextStyle(
-                color: LoggerColors.of(context).consoleWhite,
-                letterSpacing: -0.5,
-              ),
-            )
-          : Text(
-              'Debug console',
-              style: TextStyle(
-                color: LoggerColors.of(context).consoleWhite,
-                fontWeight: FontWeight.w600,
-                letterSpacing: -0.5,
-              ),
-            ),
-      actions: [
-        PopupMenuButton<String>(
-          onSelected: _onFilterTap,
-          padding: EdgeInsets.zero,
-          icon: Icon(
-            Icons.filter_list_rounded,
-            color: selectedFilter.isNotEmpty
-                ? LoggerColors.of(context).brilliantAzure
-                : LoggerColors.of(context).consoleWhite,
-          ),
-          itemBuilder: (context) => [
-            PopupMenuItem(
-              value: 'All',
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Theme(
-                    data: ThemeData(
-                      checkboxTheme: CheckboxThemeData(
-                        checkColor: WidgetStateProperty.all(
-                          LoggerColors.of(context).consoleWhite,
-                        ),
-                        fillColor: WidgetStateProperty.all(
-                          _isAllSelected
-                              ? LoggerColors.of(context).brilliantAzure
-                              : Colors.transparent,
-                        ),
-                        side: BorderSide(
-                          width: 1.5,
-                          color: _isAllSelected
-                              ? LoggerColors.of(context).brilliantAzure
-                              : LoggerColors.of(context).gray,
-                        ),
-                      ),
-                    ),
-                    child: Checkbox(
-                      value: _isAllSelected,
-                      overlayColor: WidgetStateProperty.all(
-                        LoggerColors.of(context).brilliantAzure,
-                      ),
-                      tristate: true,
-                      checkColor: LoggerColors.of(context).consoleWhite,
-                      activeColor: LoggerColors.of(context).brilliantAzure,
-                      onChanged: null,
-                    ),
-                  ),
-                  Expanded(
-                    child: Text(
-                      'All',
-                      style: TextStyle(
-                        color: _isAllSelected
-                            ? LoggerColors.of(context).brilliantAzure
-                            : LoggerColors.of(context).consoleWhite,
-                        fontWeight: FontWeight.w500,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                ],
-              ),
-            ),
+  Widget build(BuildContext context) {
+    final colors = LoggerColors.of(context);
 
-            ...LogBuffer.instance.logsPrefix.map<PopupMenuEntry<String>>(
-              (e) => PopupMenuItem(
-                value: e,
+    return Scaffold(
+      backgroundColor: colors.loggerBackground,
+      appBar: AppBar(
+        centerTitle: false,
+        backgroundColor: colors.loggerBackground,
+        title: _isSearchEnabled
+            ? TextField(
+                focusNode: _searchFocusNode,
+                onChanged: _onSearchChanged,
+                decoration: const InputDecoration(border: InputBorder.none),
+                style: TextStyle(
+                  color: colors.consoleWhite,
+                  letterSpacing: -0.5,
+                ),
+              )
+            : Text(
+                'Debug console',
+                style: TextStyle(
+                  color: colors.consoleWhite,
+                  fontWeight: FontWeight.w600,
+                  letterSpacing: -0.5,
+                ),
+              ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: _onFilterTap,
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              Icons.filter_list_rounded,
+              color: selectedFilter.isNotEmpty
+                  ? colors.brilliantAzure
+                  : colors.consoleWhite,
+            ),
+            itemBuilder: (context) => [
+              PopupMenuItem(
+                value: 'All',
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Theme(
-                      data: ThemeData(
-                        checkboxTheme: CheckboxThemeData(
-                          checkColor: WidgetStateProperty.all(
-                            LoggerColors.of(context).consoleWhite,
-                          ),
-                          fillColor: WidgetStateProperty.all(
-                            selectedFilter.contains(e)
-                                ? LoggerColors.of(context).brilliantAzure
-                                : Colors.transparent,
-                          ),
-                          side: BorderSide(
-                            width: 1.5,
-                            color: selectedFilter.contains(e)
-                                ? LoggerColors.of(context).brilliantAzure
-                                : LoggerColors.of(context).gray,
-                          ),
-                        ),
+                    Checkbox(
+                      value: _isAllSelected,
+                      onChanged: null,
+                      tristate: true,
+                      checkColor: colors.consoleWhite,
+                      fillColor: WidgetStateProperty.all(
+                        _isAllSelected
+                            ? colors.brilliantAzure
+                            : Colors.transparent,
                       ),
-                      child: Checkbox(
-                        value: selectedFilter.contains(e),
-                        overlayColor: WidgetStateProperty.all(
-                          LoggerColors.of(context).brilliantAzure,
-                        ),
-                        tristate: true,
-                        checkColor: LoggerColors.of(context).consoleWhite,
-                        activeColor: LoggerColors.of(context).brilliantAzure,
-                        onChanged: null,
+                      overlayColor: WidgetStateProperty.all(
+                        colors.brilliantAzure,
+                      ),
+                      side: BorderSide(
+                        width: 1.5,
+                        color: _isAllSelected
+                            ? colors.brilliantAzure
+                            : colors.gray,
                       ),
                     ),
                     Expanded(
                       child: Text(
-                        e,
+                        'All',
                         style: TextStyle(
-                          color: selectedFilter.contains(e)
-                              ? LoggerColors.of(context).brilliantAzure
-                              : LoggerColors.of(context).consoleWhite,
+                          color: _isAllSelected
+                              ? colors.brilliantAzure
+                              : colors.consoleWhite,
                           fontWeight: FontWeight.w500,
                         ),
                         maxLines: 2,
@@ -167,31 +107,72 @@ class _LogViewerScreenState extends LogViewerScreenState {
                   ],
                 ),
               ),
+              ...LogBuffer.instance.logsPrefix.map(
+                (e) => PopupMenuItem(
+                  value: e,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Checkbox(
+                        value: selectedFilter.contains(e),
+                        onChanged: null,
+                        tristate: true,
+                        checkColor: colors.consoleWhite,
+                        fillColor: WidgetStateProperty.all(
+                          selectedFilter.contains(e)
+                              ? colors.brilliantAzure
+                              : Colors.transparent,
+                        ),
+                        overlayColor: WidgetStateProperty.all(
+                          colors.brilliantAzure,
+                        ),
+                        side: BorderSide(
+                          width: 1.5,
+                          color: selectedFilter.contains(e)
+                              ? colors.brilliantAzure
+                              : colors.gray,
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          e,
+                          style: TextStyle(
+                            color: selectedFilter.contains(e)
+                                ? colors.brilliantAzure
+                                : colors.consoleWhite,
+                            fontWeight: FontWeight.w500,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+
+          IconButton(
+            onPressed: _onSearchTap,
+            icon: Icon(Icons.search_rounded, color: colors.consoleWhite),
+          ),
+
+          IconButton(
+            onPressed: _onClearLogsTap,
+            icon: Icon(
+              Icons.delete_outline_outlined,
+              color: colors.consoleWhite,
             ),
-          ],
-        ),
-
-        IconButton(
-          onPressed: _onSearchTap,
-          icon: Icon(
-            Icons.search_rounded,
-            color: LoggerColors.of(context).consoleWhite,
           ),
-        ),
+        ],
+      ),
+      body: ListenableBuilder(
+        listenable: activeLogMessages,
+        builder: (context, child) {
+          final filteredLogs = logMessages;
 
-        IconButton(
-          onPressed: _onClearLogsTap,
-          icon: Icon(
-            Icons.delete_outline_outlined,
-            color: LoggerColors.of(context).consoleWhite,
-          ),
-        ),
-      ],
-    ),
-    body: ListenableBuilder(
-      listenable: activeLogMessages,
-      builder: (context, child) =>
-          NotificationListener<ScrollUpdateNotification>(
+          return NotificationListener<ScrollUpdateNotification>(
             onNotification: _onScrolled,
             child: Scrollbar(
               controller: _scrollController,
@@ -199,46 +180,42 @@ class _LogViewerScreenState extends LogViewerScreenState {
                 padding: const EdgeInsets.symmetric(horizontal: 4),
                 child: CustomScrollView(
                   controller: _scrollController,
-                  physics: const ClampingScrollPhysics(),
+                  physics: const ClampingScrollPhysics(
+                    parent: AlwaysScrollableScrollPhysics(),
+                  ),
                   slivers: [
                     SliverList.builder(
-                      itemCount: logMessages.length,
+                      itemCount: filteredLogs.length,
                       itemBuilder: (context, index) {
-                        final log = logMessages.elementAt(index);
+                        final log = filteredLogs[index];
+                        final logColor = log.color.toColor(colors);
 
                         final child = SelectableText.rich(
                           style: const TextStyle(height: 0),
                           TextSpan(
                             children: [
-                              // Prefix
                               TextSpan(
                                 text: '[${log.prefix}]',
                                 style: TextStyle(
-                                  color: log.color.consoleColorToColor(context),
+                                  color: logColor,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 11,
                                   letterSpacing: -0.5,
                                 ),
                               ),
-
-                              // Timestamp
                               TextSpan(
                                 text: '[${log.timestamp}] ',
                                 style: TextStyle(
-                                  color: LoggerColors.of(
-                                    context,
-                                  ).brilliantAzure,
+                                  color: colors.brilliantAzure,
                                   fontWeight: FontWeight.w500,
                                   fontSize: 11,
                                   letterSpacing: -0.5,
                                 ),
                               ),
-
-                              // Message
                               TextSpan(
                                 text: log.message,
                                 style: TextStyle(
-                                  color: log.color.consoleColorToColor(context),
+                                  color: logColor,
                                   fontWeight: FontWeight.w400,
                                   fontSize: 11,
                                   letterSpacing: -0.5,
@@ -248,14 +225,13 @@ class _LogViewerScreenState extends LogViewerScreenState {
                           ),
                         );
 
-                        if (index % 2 == 0) {
+                        if (index.isEven) {
                           return ColoredBox(
-                            color: LoggerColors.of(context).gray.withAlpha(30),
+                            color: colors.gray.withAlpha(30),
                             child: child,
                           );
-                        } else {
-                          return child;
                         }
+                        return child;
                       },
                     ),
 
@@ -264,32 +240,48 @@ class _LogViewerScreenState extends LogViewerScreenState {
                 ),
               ),
             ),
-          ),
-    ),
-    floatingActionButton: ValueListenableBuilder(
-      valueListenable: _isSendingLogToServer,
-      builder: (context, isLoading, child) => FloatingActionButton(
-        backgroundColor: LoggerColors.of(context).consoleWhite,
-        onPressed: onSaveAndSendToServerTap,
-        child: AnimatedSwitcher(
-          duration: const Duration(milliseconds: 200),
-          child: switch (isLoading) {
-            true => RepaintBoundary(
-              child: SizedBox.square(
-                dimension: 22,
-                child: CircularProgressIndicator(
-                  color: LoggerColors.of(context).loggerBackground,
-                  strokeCap: StrokeCap.round,
-                ),
+          );
+        },
+      ),
+      floatingActionButton: Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        spacing: 8,
+        children: [
+          ValueListenableBuilder(
+            valueListenable: _isSendingLogToServer,
+            builder: (context, isLoading, child) => FloatingActionButton(
+              backgroundColor: colors.consoleWhite,
+              onPressed: onSaveAndSendToServerTap,
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: switch (isLoading) {
+                  true => RepaintBoundary(
+                    child: SizedBox.square(
+                      dimension: 22,
+                      child: CircularProgressIndicator(
+                        color: colors.loggerBackground,
+                        strokeCap: StrokeCap.round,
+                      ),
+                    ),
+                  ),
+                  false => Icon(
+                    Icons.upload_file,
+                    color: colors.loggerBackground,
+                  ),
+                },
               ),
             ),
-            false => Icon(
-              Icons.upload_file,
-              color: LoggerColors.of(context).loggerBackground,
+          ),
+          FloatingActionButton(
+            backgroundColor: colors.consoleWhite,
+            onPressed: scrollToBottom,
+            child: Icon(
+              Icons.arrow_downward_rounded,
+              color: colors.loggerBackground,
             ),
-          },
-        ),
+          ),
+        ],
       ),
-    ),
-  );
+    );
+  }
 }

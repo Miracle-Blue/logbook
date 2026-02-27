@@ -33,10 +33,13 @@ final class LogBuffer with ChangeNotifier {
   /// Queue
   final Queue<LogMessage> _queue = Queue<LogMessage>();
 
+  /// Prefix occurrence counts — avoids O(n) iteration for prefix lookups
+  final Map<String, int> _prefixCounts = {};
+
   /// Notification scheduled
   bool _notificationScheduled = false;
 
-  /// Total logs count
+  /// Total logs count (monotonically increasing, never clamped)
   int _totalLogsCount = 0;
 
   /// This is the total logs count in the buffer
@@ -45,24 +48,25 @@ final class LogBuffer with ChangeNotifier {
   /// Get the logs
   Iterable<LogMessage> get logs => _queue;
 
-  /// Get the logs prefix
-  Iterable<String> get logsPrefix => _queue.map((log) => log.prefix).toSet();
-
-  /// Search logs by text
-  Iterable<LogMessage> searchLogs(String text) =>
-      _queue.where((log) => log.message.contains(text));
+  /// Get the logs prefix — O(1) via tracked map keys
+  Iterable<String> get logsPrefix => _prefixCounts.keys;
 
   /// Clear the logs
   void clear() {
     _queue.clear();
+    _prefixCounts.clear();
     _scheduleNotification();
   }
 
   /// Add a log to the buffer
   void add(LogMessage log) {
-    if (_queue.length >= bufferLimit) _queue.removeFirst();
+    if (_queue.length >= bufferLimit) {
+      _untrackPrefix(_queue.first.prefix);
+      _queue.removeFirst();
+    }
     _queue.add(log);
-    _totalLogsCount = (_totalLogsCount + 1).clamp(0, bufferLimit);
+    _trackPrefix(log.prefix);
+    _totalLogsCount++;
     _scheduleNotification();
   }
 
@@ -72,12 +76,30 @@ final class LogBuffer with ChangeNotifier {
     if (_queue.length + list.length > bufferLimit) {
       final toRemove = _queue.length + list.length - bufferLimit;
       for (var i = 0; i < toRemove; i++) {
+        _untrackPrefix(_queue.first.prefix);
         _queue.removeFirst();
       }
     }
+    for (final log in list) {
+      _trackPrefix(log.prefix);
+    }
     _queue.addAll(list);
-    _totalLogsCount = (_totalLogsCount + list.length).clamp(0, bufferLimit);
+    _totalLogsCount += list.length;
     _scheduleNotification();
+  }
+
+  void _trackPrefix(String prefix) {
+    _prefixCounts[prefix] = (_prefixCounts[prefix] ?? 0) + 1;
+  }
+
+  void _untrackPrefix(String prefix) {
+    final count = _prefixCounts[prefix];
+    if (count == null) return;
+    if (count <= 1) {
+      _prefixCounts.remove(prefix);
+    } else {
+      _prefixCounts[prefix] = count - 1;
+    }
   }
 
   /// Returns logs added after [sinceCount] total additions.
@@ -123,6 +145,7 @@ final class LogBuffer with ChangeNotifier {
   @override
   void dispose() {
     _queue.clear();
+    _prefixCounts.clear();
     super.dispose();
   }
 }

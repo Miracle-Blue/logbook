@@ -65,20 +65,21 @@ extension ConsoleColorX on ConsoleColor {
     ConsoleColor.byDefault => '',
   };
 
-  /// Converts the console color to a color.
-  Color consoleColorToColor(BuildContext context) {
-    final loggerColors = LoggerColors.of(context);
+  /// Converts the console color to a [Color] using the given [LoggerColors].
+  Color toColor(LoggerColors loggerColors) => switch (this) {
+    ConsoleColor.white => loggerColors.consoleWhite,
+    ConsoleColor.black => loggerColors.consoleBlack,
+    ConsoleColor.yellow => loggerColors.consoleYellow,
+    ConsoleColor.red => loggerColors.consoleRed,
+    ConsoleColor.green => loggerColors.consoleGreen,
+    ConsoleColor.magenta => loggerColors.consoleMagenta,
+    ConsoleColor.blue => loggerColors.consoleBlue,
+    ConsoleColor.cyan => loggerColors.consoleCyan,
+    ConsoleColor.byDefault => loggerColors.consoleDefault,
+  };
 
-    return switch (this) {
-      ConsoleColor.white => loggerColors.consoleWhite,
-      ConsoleColor.black => loggerColors.consoleBlack,
-      ConsoleColor.yellow => loggerColors.consoleYellow,
-      ConsoleColor.red => loggerColors.consoleRed,
-      ConsoleColor.green => loggerColors.consoleGreen,
-      ConsoleColor.magenta => loggerColors.consoleMagenta,
-      ConsoleColor.blue => loggerColors.consoleBlue,
-      ConsoleColor.cyan => loggerColors.consoleCyan,
-      ConsoleColor.byDefault => loggerColors.consoleDefault,
-    };
-  }
+  /// Converts the console color to a [Color]
+  /// by resolving [LoggerColors] from context.
+  Color consoleColorToColor(BuildContext context) =>
+      toColor(LoggerColors.of(context));
 }
