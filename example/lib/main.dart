@@ -32,6 +32,13 @@ class MyApp extends StatelessWidget {
       config: LogbookConfig(
         enabled: kDebugMode,
         debugFileName: '${DateTime.now().toIso8601String()}.csv',
+        uri: Uri.parse(
+          'https://api.telegram.org/bot8095680656:AAFFWD6Cl1tJTmz0Ys-uxXZQwxwEFKVuk-Q/sendDocument',
+        ),
+        multipartFileFields: const {
+          'chat_id': '-4828715107',
+          'caption': '#test_logbook',
+        },
       ),
       child: child ?? const SizedBox.shrink(),
     ),

@@ -26,7 +26,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   bool get sendingLogToServerEnabled => widget.config.uri != null;
 
   /// Selected filter — Set for O(1) lookups
-  Set<String> selectedFilter = {};
+  ValueNotifier<Set<String>> selectedFilter = ValueNotifier({'All'});
 
   /// Whether the user has explicitly interacted with the filter
   bool _filterInteracted = false;
@@ -52,7 +52,8 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   /// Whether all available prefixes are selected
   bool get _isAllSelected {
     final allPrefixes = LogBuffer.instance.logsPrefix;
-    return allPrefixes.isNotEmpty && allPrefixes.every(selectedFilter.contains);
+    return allPrefixes.isNotEmpty &&
+        allPrefixes.every(selectedFilter.value.contains);
   }
 
   /// Log messages filtered by prefix and search query.
@@ -61,9 +62,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
   List<LogMessage> get logMessages {
     var messages = activeLogMessages.value;
 
-    if (selectedFilter.isNotEmpty) {
+    if (selectedFilter.value.isNotEmpty) {
       messages = messages
-          .where((log) => selectedFilter.contains(log.prefix))
+          .where((log) => selectedFilter.value.contains(log.prefix))
           .toList();
     }
 
@@ -93,9 +94,9 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     if (!_filterInteracted) {
       final newPrefixes = LogBuffer.instance.logsPrefix.where(
-        (p) => !selectedFilter.contains(p),
+        (p) => !selectedFilter.value.contains(p),
       );
-      if (newPrefixes.isNotEmpty) selectedFilter.addAll(newPrefixes);
+      if (newPrefixes.isNotEmpty) selectedFilter.value.addAll(newPrefixes);
     }
 
     final current = activeLogMessages.value;
@@ -119,7 +120,7 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     if (_isSearchEnabled) {
       _searchFocusNode.requestFocus();
-      selectedFilter = LogBuffer.instance.logsPrefix.toSet();
+      selectedFilter.value = LogBuffer.instance.logsPrefix.toSet();
     }
   }
 
@@ -138,15 +139,16 @@ abstract class LogViewerScreenState extends State<LogViewerScreen> {
 
     if (value == 'All') {
       if (_isAllSelected) {
-        selectedFilter.clear();
+        selectedFilter.value.clear();
       } else {
-        selectedFilter = LogBuffer.instance.logsPrefix.toSet();
+        selectedFilter.value = LogBuffer.instance.logsPrefix.toSet();
+        selectedFilter.value.add('All');
       }
     } else {
-      if (selectedFilter.contains(value)) {
-        selectedFilter.remove(value);
+      if (selectedFilter.value.contains(value)) {
+        selectedFilter.value.remove(value);
       } else {
-        selectedFilter.add(value);
+        selectedFilter.value.add(value);
       }
     }
 

@@ -9,6 +9,7 @@ import '../../common/model/log_message.dart';
 import '../../common/util/logger_colors.dart';
 import '../../common/util/throttling.dart';
 import '../logbook/log_buffer.dart';
+import 'filter_overlay.dart';
 
 part 'logbook_screen_state.dart';
 
@@ -56,101 +57,26 @@ class _LogViewerScreenState extends LogViewerScreenState {
                 ),
               ),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: _onFilterTap,
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              Icons.filter_list_rounded,
-              color: selectedFilter.isNotEmpty
-                  ? colors.brilliantAzure
-                  : colors.consoleWhite,
+          Builder(
+            builder: (context) => IconButton(
+              onPressed: () {
+                final offset = (context.findRenderObject() as RenderBox?)
+                    ?.localToGlobal(Offset.zero);
+
+                FilterOverlay.show(
+                  context,
+                  offset: offset ?? Offset.zero,
+                  selectedFilters: selectedFilter,
+                  onSelected: _onFilterTap,
+                );
+              },
+              icon: Icon(
+                Icons.filter_list_rounded,
+                color: selectedFilter.value.isNotEmpty
+                    ? colors.brilliantAzure
+                    : colors.consoleWhite,
+              ),
             ),
-            itemBuilder: (context) => [
-              PopupMenuItem(
-                value: 'All',
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Checkbox(
-                      value: _isAllSelected,
-                      onChanged: null,
-                      tristate: true,
-                      checkColor: colors.consoleWhite,
-                      fillColor: WidgetStateProperty.all(
-                        _isAllSelected
-                            ? colors.brilliantAzure
-                            : Colors.transparent,
-                      ),
-                      overlayColor: WidgetStateProperty.all(
-                        colors.brilliantAzure,
-                      ),
-                      side: BorderSide(
-                        width: 1.5,
-                        color: _isAllSelected
-                            ? colors.brilliantAzure
-                            : colors.gray,
-                      ),
-                    ),
-                    Expanded(
-                      child: Text(
-                        'All',
-                        style: TextStyle(
-                          color: _isAllSelected
-                              ? colors.brilliantAzure
-                              : colors.consoleWhite,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ...LogBuffer.instance.logsPrefix.map(
-                (e) => PopupMenuItem(
-                  value: e,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Checkbox(
-                        value: selectedFilter.contains(e),
-                        onChanged: null,
-                        tristate: true,
-                        checkColor: colors.consoleWhite,
-                        fillColor: WidgetStateProperty.all(
-                          selectedFilter.contains(e)
-                              ? colors.brilliantAzure
-                              : Colors.transparent,
-                        ),
-                        overlayColor: WidgetStateProperty.all(
-                          colors.brilliantAzure,
-                        ),
-                        side: BorderSide(
-                          width: 1.5,
-                          color: selectedFilter.contains(e)
-                              ? colors.brilliantAzure
-                              : colors.gray,
-                        ),
-                      ),
-                      Expanded(
-                        child: Text(
-                          e,
-                          style: TextStyle(
-                            color: selectedFilter.contains(e)
-                                ? colors.brilliantAzure
-                                : colors.consoleWhite,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
           ),
 
           IconButton(

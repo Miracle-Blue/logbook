@@ -1,3 +1,9 @@
+## 0.5.1
+
+- Replaced PopupMenuButton filter with a custom overlay-based filter panel
+- Replaced raw `Isolate.spawn` with `compute` for CSV generation
+- Updated `http` dependency to ^1.6.0
+
 ## 0.5.0
 
 - Multi-select log filter with checkboxes and "All" toggle (replaces single-select)
