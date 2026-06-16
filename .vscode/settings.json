@@ -1,7 +1,4 @@
 {
-  "cSpell.words": [
-    "endtemplate",
-    "newbot"
-  ],
-  "dart.lineLength": 80,
+  "cSpell.words": ["endtemplate", "FEFF", "newbot", "truecolor"],
+  "dart.lineLength": 80
 }

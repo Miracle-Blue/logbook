@@ -45,7 +45,7 @@ Color _paletteColor(String prefix) =>
 ///
 /// Channels are derived from `toARGB32()` to avoid the deprecated
 /// `.red`/`.green`/`.blue` getters.
-String _ansiTruecolor(Color color) {
+String _ansiTrueColor(Color color) {
   final argb = color.toARGB32();
   final r = (argb >> 16) & 0xFF;
   final g = (argb >> 8) & 0xFF;
@@ -77,5 +77,5 @@ String ansiForegroundForPrefix(String prefix) => switch (prefix) {
   'I' => ConsoleColor.blue.foregroundValue, // matches l.i console color
   'W' => ConsoleColor.yellow.foregroundValue,
   'S' => ConsoleColor.red.foregroundValue,
-  _ => _ansiTruecolor(_paletteColor(prefix)),
+  _ => _ansiTrueColor(_paletteColor(prefix)),
 };
