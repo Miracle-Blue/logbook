@@ -69,11 +69,20 @@ abstract class LogbookState extends State<Logbook>
   @override
   void initState() {
     super.initState();
+    // The constructor config is the initial value; runtime changes go
+    // through Logbook.config and are reflected here via _onConfigChanged.
+    Logbook._configNotifier.value = widget._initialConfig;
+    Logbook._configNotifier.addListener(_onConfigChanged);
     dismissed = ValueNotifier(true);
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..addStatusListener(_onStatusChanged);
+  }
+
+  /// Rebuilds the overlay when the config changes at runtime.
+  void _onConfigChanged() {
+    if (mounted) setState(() {});
   }
 
   @override
@@ -83,6 +92,7 @@ abstract class LogbookState extends State<Logbook>
 
   @override
   void dispose() {
+    Logbook._configNotifier.removeListener(_onConfigChanged);
     _controller
       ..removeStatusListener(_onStatusChanged)
       ..dispose();

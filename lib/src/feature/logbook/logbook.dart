@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:math' as math;
 
+import 'package:flutter/foundation.dart' show ValueListenable;
 import 'package:flutter/material.dart';
 
 import '../../../logbook.dart';
@@ -17,17 +18,36 @@ class Logbook extends StatefulWidget {
   /// {@macro LogViewerWidget}
   const Logbook({
     required this.child,
-    this.config = const LogbookConfig(),
+    LogbookConfig config = const LogbookConfig(),
     super.key,
-  });
+  }) : _initialConfig = config;
 
-  /// {@macro logbook_config}
-  final LogbookConfig config;
+  /// The configuration applied when the overlay first mounts.
+  ///
+  /// After mount, read or change the config at runtime via [Logbook.config].
+  final LogbookConfig _initialConfig;
 
   /// The child widget to be displayed.
   ///
   /// Logbook will be displayed on top of this widget as an overlay.
   final Widget child;
+
+  /// Single source of truth for the live config. Seeded from the constructor
+  /// at mount; changed at runtime via [config].
+  static final ValueNotifier<LogbookConfig> _configNotifier =
+      ValueNotifier<LogbookConfig>(const LogbookConfig());
+
+  /// The current Logbook configuration.
+  ///
+  /// The constructor sets the initial value; assign here to change it at any
+  /// time and the overlay updates live, e.g.:
+  /// `Logbook.config = Logbook.config.copyWith(themeMode: ThemeMode.dark);`
+  static LogbookConfig get config => _configNotifier.value;
+
+  static set config(LogbookConfig value) => _configNotifier.value = value;
+
+  /// Read-only listenable view of [config] for reacting to runtime changes.
+  static ValueListenable<LogbookConfig> get configListenable => _configNotifier;
 
   /// State of the logbook widget.
   static LogbookState stateOf(BuildContext context) =>
@@ -39,7 +59,10 @@ class Logbook extends StatefulWidget {
 
   /// Sends the logs to the server.
   static Future<void> sendLogsToServer(BuildContext context) async {
-    final config = stateOf(context).widget.config;
+    // Asserts a Logbook is in scope (preserves prior behavior), then sends
+    // using the current — possibly runtime-updated — config.
+    stateOf(context);
+    final config = _configNotifier.value;
 
     await LogBuffer.instance.sendLogsToServer(
       uri: config.uri,
@@ -55,7 +78,7 @@ class Logbook extends StatefulWidget {
 /// State for widget [LogbookState].
 class _LogbookState extends LogbookState {
   @override
-  Widget build(BuildContext context) => !widget.config.enabled
+  Widget build(BuildContext context) => !Logbook.config.enabled
       ? widget.child
       : LayoutBuilder(
           builder: (context, constraints) {
@@ -106,13 +129,13 @@ class _LogbookState extends LogbookState {
                     ),
                     child: Theme(
                       data:
-                          switch (widget.config.themeMode) {
+                          switch (Logbook.config.themeMode) {
                             ThemeMode.light => ThemeData.light(),
                             ThemeMode.dark => ThemeData.dark(),
                             _ => Theme.of(context),
                           }.copyWith(
                             textTheme: Theme.of(context).textTheme.apply(
-                              fontFamily: widget.config.fontFamily,
+                              fontFamily: Logbook.config.fontFamily,
                             ),
                           ),
                       child: SizedBox(
@@ -136,7 +159,7 @@ class _LogbookState extends LogbookState {
                                           pages: <Page<void>>[
                                             MaterialPage<void>(
                                               child: LogViewerScreen(
-                                                config: widget.config,
+                                                config: Logbook.config,
                                               ),
                                             ),
                                           ],

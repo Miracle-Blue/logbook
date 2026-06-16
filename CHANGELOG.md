@@ -1,3 +1,8 @@
+## 0.5.3
+
+- Config can now be changed at runtime via `Logbook.config` (get/set) and observed with `Logbook.configListenable`; the overlay updates live (theme, font, `enabled`, server settings)
+- The `Logbook(config: ...)` constructor is unchanged, but the widget's instance `config` field is now private — read the static `Logbook.config` instead
+
 ## 0.5.2
 
 - Custom `l.log` prefixes now each render in their own stable, dark-friendly color instead of all magenta
