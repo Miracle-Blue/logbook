@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../logbook.dart';
-import '../../common/model/console_color.dart';
 import '../../common/model/log_message.dart';
 import '../../common/util/logger_colors.dart';
+import '../../common/util/prefix_palette.dart';
 import '../../common/util/throttling.dart';
 import '../logbook/log_buffer.dart';
 import 'filter_overlay.dart';
@@ -114,7 +114,7 @@ class _LogViewerScreenState extends LogViewerScreenState {
                       itemCount: filteredLogs.length,
                       itemBuilder: (context, index) {
                         final log = filteredLogs[index];
-                        final logColor = log.color.toColor(colors);
+                        final logColor = colorForPrefix(log.prefix, colors);
 
                         final child = SelectableText.rich(
                           style: const TextStyle(height: 0),

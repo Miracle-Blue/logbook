@@ -1,3 +1,8 @@
+## 0.5.2
+
+- Custom `l.log` prefixes now each render in their own stable, dark-friendly color instead of all magenta
+- The per-prefix color is shown consistently in both the console (24-bit color) and the in-app log viewer
+
 ## 0.5.1
 
 - Replaced PopupMenuButton filter with a custom overlay-based filter panel

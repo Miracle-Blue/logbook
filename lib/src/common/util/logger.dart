@@ -9,6 +9,7 @@ import '../model/console_color.dart';
 import '../model/console_font.dart';
 import '../model/log_message.dart';
 import 'constants.dart';
+import 'prefix_palette.dart';
 
 /// Global logger instance.
 final l = _L._();
@@ -69,13 +70,13 @@ final class _L {
       message: "$message${stackTrace != null ? '\n$stackTrace\n\n' : ''}",
       timestamp: DateTime.now(),
       prefix: prefix,
-      color: ConsoleColor.magenta,
+      color: ConsoleColor.byDefault,
     );
     LogBuffer.instance.add(logMessage);
 
     if (kReleaseMode) return;
 
-    final foreground = ConsoleColor.magenta.foregroundValue;
+    final foreground = ansiForegroundForPrefix(prefix);
     final formattedMessage = _formatStyled(
       '${Constants.esc}$foreground $message',
       prefix,
