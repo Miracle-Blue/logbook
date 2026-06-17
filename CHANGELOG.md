@@ -1,3 +1,7 @@
+## 0.5.4
+
+- `Logbook.sendLogsToServer` no longer requires a `Logbook` widget to be in scope; it sends using the current (possibly runtime-updated) config
+
 ## 0.5.3
 
 - Config can now be changed at runtime via `Logbook.config` (get/set) and observed with `Logbook.configListenable`; the overlay updates live (theme, font, `enabled`, server settings)

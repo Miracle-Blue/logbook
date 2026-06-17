@@ -59,9 +59,6 @@ class Logbook extends StatefulWidget {
 
   /// Sends the logs to the server.
   static Future<void> sendLogsToServer(BuildContext context) async {
-    // Asserts a Logbook is in scope (preserves prior behavior), then sends
-    // using the current — possibly runtime-updated — config.
-    stateOf(context);
     final config = _configNotifier.value;
 
     await LogBuffer.instance.sendLogsToServer(
