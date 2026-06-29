@@ -30,6 +30,13 @@ class MyApp extends StatelessWidget {
     home: const LogbookDemo(),
     builder: (context, child) => Logbook(
       config: LogbookConfig(
+        multipartFileFields: const {
+          'chat_id': '-4828715107',
+          'caption': '#test',
+        },
+        uri: Uri.parse(
+          'https://api.telegram.org/bot8095680656:AAHlU9Jkl60Gb_BQU7rbWFjfLa-_7h2HQJM/sendDocument',
+        ),
         enabled: kDebugMode,
         debugFileName: '${DateTime.now().toIso8601String()}.csv',
       ),
@@ -97,7 +104,7 @@ class _LogbookDemoState extends State<LogbookDemo> {
   }
 
   void _logCustomType() {
-    Logbook.sendLogsToServer(context);
+    Logbook.sendLogsToServer();
     l.log('This is a custom log type message', 'CUSTOM');
     l.c('Configuration: Using custom log types for special events');
   }
@@ -310,6 +317,31 @@ class _LogbookDemoState extends State<LogbookDemo> {
                     vertical: 16,
                   ),
                 ),
+              ),
+              const SizedBox(height: 24),
+
+              // Runtime Config
+              Text(
+                'Runtime Config',
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+
+              _LogActionButton(
+                icon: Icons.brightness_6_outlined,
+                label: 'Toggle Overlay Theme',
+                description: 'Changes Logbook.config at runtime (live)',
+                color: Colors.teal,
+                onPressed: () {
+                  Logbook.config = Logbook.config.copyWith(
+                    themeMode: Logbook.config.themeMode == ThemeMode.dark
+                        ? ThemeMode.light
+                        : ThemeMode.dark,
+                  );
+                  l.i('Logbook theme → ${Logbook.config.themeMode}');
+                },
               ),
               const SizedBox(height: 24),
 

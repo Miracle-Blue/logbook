@@ -1,3 +1,7 @@
+## 0.5.5
+
+- **Breaking:** `Logbook.sendLogsToServer()` no longer takes a `BuildContext` argument — call it with no parameters; it sends using the current `Logbook.config`
+
 ## 0.5.4
 
 - `Logbook.sendLogsToServer` no longer requires a `Logbook` widget to be in scope; it sends using the current (possibly runtime-updated) config
